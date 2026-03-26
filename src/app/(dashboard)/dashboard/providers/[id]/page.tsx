@@ -4055,6 +4055,7 @@ function AddApiKeyModal({
   const defaultBailianUrl = "https://coding-intl.dashscope.aliyuncs.com/apps/anthropic/v1";
   const isVertex = provider === "vertex";
   const defaultRegion = "us-central1";
+  const isCloudflare = provider === "cloudflare-ai";
 
   const [formData, setFormData] = useState({
     name: "",
@@ -4062,6 +4063,7 @@ function AddApiKeyModal({
     priority: 1,
     baseUrl: isBailian ? defaultBailianUrl : "",
     region: isVertex ? defaultRegion : "",
+    accountId: "",
     validationModelId: "",
   });
   const [validating, setValidating] = useState(false);
@@ -4150,6 +4152,10 @@ function AddApiKeyModal({
       } else if (isVertex) {
         payload.providerSpecificData = {
           region: formData.region,
+        };
+      } else if (isCloudflare && formData.accountId.trim()) {
+        payload.providerSpecificData = {
+          accountId: formData.accountId.trim(),
         };
       }
 
@@ -4250,6 +4256,15 @@ function AddApiKeyModal({
             hint="ex: us-central1 ou europe-west4. Partner models usam a região global automaticamente."
           />
         )}
+        {isCloudflare && (
+          <Input
+            label="Account ID"
+            value={formData.accountId}
+            onChange={(e) => setFormData({ ...formData, accountId: e.target.value })}
+            placeholder="e.g. 1a2b3c4d5e6f7g8h9i0j"
+            hint="Required. Found at dash.cloudflare.com (right sidebar under Account ID)."
+          />
+        )}
         <div className="flex gap-2">
           <Button
             onClick={handleSubmit}
@@ -4299,6 +4314,7 @@ function EditConnectionModal({ isOpen, connection, onSave, onClose }: EditConnec
     healthCheckInterval: 60,
     baseUrl: "",
     region: "",
+    accountId: "",
     validationModelId: "",
     tag: "",
   });
@@ -4315,6 +4331,7 @@ function EditConnectionModal({ isOpen, connection, onSave, onClose }: EditConnec
   const defaultBailianUrl = "https://coding-intl.dashscope.aliyuncs.com/apps/anthropic/v1";
   const isVertex = connection?.provider === "vertex";
   const defaultRegion = "us-central1";
+  const isCloudflare = connection?.provider === "cloudflare-ai";
 
   useEffect(() => {
     if (connection) {
@@ -4322,6 +4339,8 @@ function EditConnectionModal({ isOpen, connection, onSave, onClose }: EditConnec
       const existingBaseUrl = typeof rawBaseUrl === "string" ? rawBaseUrl : "";
       const rawRegion = connection.providerSpecificData?.region;
       const existingRegion = typeof rawRegion === "string" ? rawRegion : "";
+      const rawAccountId = connection.providerSpecificData?.accountId;
+      const existingAccountId = typeof rawAccountId === "string" ? rawAccountId : "";
       setFormData({
         name: connection.name || "",
         priority: connection.priority || 1,
@@ -4329,6 +4348,7 @@ function EditConnectionModal({ isOpen, connection, onSave, onClose }: EditConnec
         healthCheckInterval: connection.healthCheckInterval ?? 60,
         baseUrl: existingBaseUrl || (isBailian ? defaultBailianUrl : ""),
         region: existingRegion || (isVertex ? defaultRegion : ""),
+        accountId: existingAccountId,
         validationModelId: (connection.providerSpecificData?.validationModelId as string) || "",
         tag: (connection.providerSpecificData?.tag as string) || "",
       });
@@ -4464,6 +4484,8 @@ function EditConnectionModal({ isOpen, connection, onSave, onClose }: EditConnec
           updates.providerSpecificData.baseUrl = validatedBailianBaseUrl;
         } else if (isVertex) {
           updates.providerSpecificData.region = formData.region;
+        } else if (isCloudflare && formData.accountId.trim()) {
+          updates.providerSpecificData.accountId = formData.accountId.trim();
         }
       } else {
         // Also persist tag for OAuth accounts
@@ -4595,6 +4617,16 @@ function EditConnectionModal({ isOpen, connection, onSave, onClose }: EditConnec
             onChange={(e) => setFormData({ ...formData, region: e.target.value })}
             placeholder={defaultRegion}
             hint="ex: us-central1 ou europe-west4. Partner models usam a região global automaticamente."
+          />
+        )}
+
+        {isCloudflare && (
+          <Input
+            label="Account ID"
+            value={formData.accountId}
+            onChange={(e) => setFormData({ ...formData, accountId: e.target.value })}
+            placeholder="e.g. 1a2b3c4d5e6f7g8h9i0j"
+            hint="Required. Found at dash.cloudflare.com (right sidebar under Account ID)."
           />
         )}
 
