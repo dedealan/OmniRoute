@@ -334,11 +334,21 @@ export default function ProviderLimits() {
     if (groupBy !== "environment") return null;
     const groups = new Map();
     for (const conn of visibleConnections) {
-      const key = conn.group || t("ungrouped");
+      const key = (conn.providerSpecificData?.tag as string | undefined)?.trim() || t("ungrouped");
       if (!groups.has(key)) groups.set(key, []);
       groups.get(key).push(conn);
     }
-    return groups;
+
+    // Convert to sorted array based on tag string (ungrouped at the end)
+    const sortedGroups = new Map(
+      [...groups.entries()].sort(([a], [b]) => {
+        if (a === t("ungrouped")) return 1;
+        if (b === t("ungrouped")) return -1;
+        return a.localeCompare(b);
+      })
+    );
+
+    return sortedGroups;
   }, [groupBy, visibleConnections, t]);
 
   const handleSetGroupBy = (value: "none" | "environment") => {
@@ -359,7 +369,10 @@ export default function ProviderLimits() {
   useEffect(() => {
     if (typeof window === "undefined") return;
     const hasSaved = localStorage.getItem(LS_GROUP_BY) !== null;
-    if (!hasSaved && connections.some((c) => c.group)) {
+    if (
+      !hasSaved &&
+      connections.some((c) => (c.providerSpecificData?.tag as string | undefined)?.trim())
+    ) {
       setGroupBy("environment");
     }
   }, [connections]);
@@ -498,7 +511,7 @@ export default function ProviderLimits() {
       </div>
 
       {/* Account rows */}
-      <div className="rounded-xl border border-border overflow-hidden bg-bg-subtle">
+      <div className="rounded-xl border border-border overflow-hidden bg-surface">
         {/* Table header */}
         <div
           className="items-center px-4 py-2.5 border-b border-border text-[11px] font-semibold uppercase tracking-wider text-text-muted"
