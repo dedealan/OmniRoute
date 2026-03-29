@@ -13,6 +13,25 @@ import { AI_PROVIDERS, FREE_PROVIDERS, OAUTH_PROVIDERS } from "@/shared/constant
 import { useNotificationStore } from "@/store/notificationStore";
 import { copyToClipboard } from "@/shared/utils/clipboard";
 
+type UpdateStep = {
+  step: string;
+  status: string;
+  message: string;
+};
+
+const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+function mergeUpdateStep(steps: UpdateStep[], nextStep: UpdateStep) {
+  const idx = steps.findIndex((step) => step.step === nextStep.step);
+  if (idx === -1) {
+    return [...steps, nextStep];
+  }
+
+  const next = [...steps];
+  next[idx] = nextStep;
+  return next;
+}
+
 export default function HomePageClient({ machineId }) {
   const t = useTranslations("home");
   const tc = useTranslations("common");
@@ -26,9 +45,7 @@ export default function HomePageClient({ machineId }) {
 
   const [versionInfo, setVersionInfo] = useState<any>(null);
   const [updating, setUpdating] = useState(false);
-  const [updateSteps, setUpdateSteps] = useState<
-    Array<{ step: string; status: string; message: string }>
-  >([]);
+  const [updateSteps, setUpdateSteps] = useState<UpdateStep[]>([]);
   const [updatePhase, setUpdatePhase] = useState<"idle" | "running" | "done" | "failed">("idle");
 
   useEffect(() => {
@@ -134,6 +151,155 @@ export default function HomePageClient({ machineId }) {
     },
   ];
 
+  const pollBackgroundUpdate = useCallback(
+    async ({
+      channel,
+      message,
+      targetVersion,
+    }: {
+      channel: string;
+      message: string;
+      targetVersion: string;
+    }) => {
+      const notify = useNotificationStore.getState();
+      const initialSteps =
+        channel === "docker-compose"
+          ? [
+              {
+                step: "install",
+                status: "done",
+                message: message || `Queued update to v${targetVersion}.`,
+              },
+              {
+                step: "rebuild",
+                status: "running",
+                message: "Docker image is rebuilding in the background.",
+              },
+              {
+                step: "restart",
+                status: "pending",
+                message: "Waiting for OmniRoute to restart with the new version.",
+              },
+            ]
+          : [
+              {
+                step: "install",
+                status: "running",
+                message: message || `Installing v${targetVersion}.`,
+              },
+              {
+                step: "restart",
+                status: "pending",
+                message: "Waiting for OmniRoute to restart with the new version.",
+              },
+            ];
+
+      setUpdateSteps(initialSteps);
+
+      const maxAttempts = channel === "docker-compose" ? 72 : 36;
+
+      for (let attempt = 0; attempt < maxAttempts; attempt += 1) {
+        await wait(5000);
+
+        try {
+          const versionRes = await fetch("/api/system/version", { cache: "no-store" });
+          if (!versionRes.ok) {
+            throw new Error(`Version check returned ${versionRes.status}`);
+          }
+
+          const latestInfo = await versionRes.json();
+          setVersionInfo(latestInfo);
+
+          if (latestInfo.current === targetVersion) {
+            setUpdateSteps((prev) => {
+              let next = prev.map((step) => {
+                if (step.step === "install" || step.step === "rebuild" || step.step === "restart") {
+                  return { ...step, status: "done" };
+                }
+                return step;
+              });
+
+              next = mergeUpdateStep(next, {
+                step: "complete",
+                status: "done",
+                message: `OmniRoute is now running v${targetVersion}.`,
+              });
+
+              return next;
+            });
+            setUpdating(false);
+            setUpdatePhase("done");
+            notify.success(`OmniRoute updated to v${targetVersion}.`);
+            await fetchData();
+            return;
+          }
+
+          setUpdateSteps((prev) => {
+            let next = prev;
+            if (channel === "docker-compose") {
+              next = mergeUpdateStep(next, {
+                step: "rebuild",
+                status: "running",
+                message: `Docker image is still rebuilding for v${targetVersion}.`,
+              });
+            } else {
+              next = mergeUpdateStep(next, {
+                step: "install",
+                status: "running",
+                message: `Installing v${targetVersion} in the background.`,
+              });
+            }
+
+            next = mergeUpdateStep(next, {
+              step: "restart",
+              status: "pending",
+              message: `Waiting for OmniRoute to come back on v${targetVersion}.`,
+            });
+
+            return next;
+          });
+        } catch {
+          setUpdateSteps((prev) => {
+            let next = prev;
+            if (channel === "docker-compose") {
+              next = mergeUpdateStep(next, {
+                step: "rebuild",
+                status: "running",
+                message: "Docker rebuild is still in progress.",
+              });
+            } else {
+              next = mergeUpdateStep(next, {
+                step: "install",
+                status: "running",
+                message: `Installing v${targetVersion} in the background.`,
+              });
+            }
+
+            next = mergeUpdateStep(next, {
+              step: "restart",
+              status: "running",
+              message: "Service restart in progress. Waiting for OmniRoute to come back online...",
+            });
+
+            return next;
+          });
+        }
+      }
+
+      setUpdateSteps((prev) =>
+        mergeUpdateStep(prev, {
+          step: "error",
+          status: "failed",
+          message: `Update started, but v${targetVersion} did not become available before timeout. Refresh the page or check server logs.`,
+        })
+      );
+      setUpdating(false);
+      setUpdatePhase("failed");
+      notify.error(`Update to v${targetVersion} timed out.`);
+    },
+    [fetchData]
+  );
+
   const handleUpdate = async () => {
     const notify = useNotificationStore.getState();
     setUpdating(true);
@@ -153,6 +319,13 @@ export default function HomePageClient({ machineId }) {
           setUpdatePhase("idle");
           return;
         }
+        notify.success(data.message || "Update started.");
+        await pollBackgroundUpdate({
+          channel: data.channel || "docker-compose",
+          message: data.message || "",
+          targetVersion: data.to || data.latest,
+        });
+        return;
       }
 
       // SSE stream — read progress events
@@ -181,18 +354,12 @@ export default function HomePageClient({ machineId }) {
             const event = JSON.parse(line.slice(6));
 
             setUpdateSteps((prev) => {
-              // Replace existing step entry or add new one
-              const idx = prev.findIndex((s) => s.step === event.step);
-              if (idx >= 0) {
-                const next = [...prev];
-                next[idx] = event;
-                return next;
-              }
-              return [...prev, event];
+              return mergeUpdateStep(prev, event);
             });
 
             if (event.step === "complete") {
               setUpdatePhase("done");
+              setUpdating(false);
               notify.success(event.message || "Update complete!");
             } else if (event.step === "error") {
               setUpdatePhase("failed");
@@ -242,6 +409,7 @@ export default function HomePageClient({ machineId }) {
     complete: "Complete",
     error: "Error",
   };
+  const showUpdateOverlay = updatePhase !== "idle";
 
   if (loading) {
     return (
@@ -257,7 +425,7 @@ export default function HomePageClient({ machineId }) {
   return (
     <div className="flex flex-col gap-8">
       {/* Update Progress Overlay */}
-      {updating && (
+      {showUpdateOverlay && (
         <div className="fixed inset-0 z-[999] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
           <div className="bg-bg-main border border-border rounded-2xl shadow-2xl max-w-md w-full p-6">
             <div className="flex items-center gap-3 mb-5">
@@ -371,7 +539,7 @@ export default function HomePageClient({ machineId }) {
       )}
 
       {/* Update Notification Banner */}
-      {versionInfo?.updateAvailable && !updating && (
+      {versionInfo?.updateAvailable && !showUpdateOverlay && (
         <div className="bg-primary/10 border border-primary/20 text-primary px-5 py-4 rounded-xl flex items-center justify-between min-h-[64px]">
           <div className="flex items-center gap-4">
             <span className="material-symbols-outlined text-[24px]">system_update_alt</span>
