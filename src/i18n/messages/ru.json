@@ -571,7 +571,9 @@
       "cursor": "Редактор кода курсора AI",
       "continue": "Продолжить AI-помощник",
       "opencode": "OpenCode AI coding agent (Terminal)",
-      "kiro": "Amazon Kiro — AI-powered IDE"
+      "kiro": "Amazon Kiro — AI-powered IDE",
+      "windsurf": "Windsurf AI Code Editor",
+      "copilot": "GitHub Copilot AI Assistant"
     },
     "guides": {
       "cursor": {
@@ -1409,7 +1411,7 @@
     "importingModels": "Импорт...",
     "importFromModels": "Импорт из /модели",
     "clearAllModels": "Очистить все модели",
-    "clearAllModelsConfirm": "Вы уверены, что хотите удалить все модели для этого провайдера? Это действие нельзя отменить.",
+    "clearAllModelsConfirm": "Вы уверены, что хотите удалить все модели для этого провайдера?",
     "clearAllModelsSuccess": "Все модели очищены",
     "clearAllModelsFailed": "Не удалось очистить модели",
     "addConnectionToImport": "Добавьте соединение, чтобы включить импорт.",
@@ -1581,10 +1583,9 @@
     "autoSyncEnabled": "Автосинхронизация включена — модели будут периодически обновляться",
     "autoSyncDisabled": "Автосинхронизация отключена",
     "autoSyncToggleFailed": "Не удалось переключить автосинхронизацию",
-    "clearAllModels": "Очистить все модели",
-    "clearAllModelsConfirm": "Вы уверены, что хотите удалить все модели для этого провайдера?",
-    "clearAllModelsSuccess": "Все модели очищены",
-    "clearAllModelsFailed": "Не удалось очистить модели"
+    "allModelsAlreadyImported": "Все модели уже импортированы",
+    "noNewModelsToImport": "Нет новых моделей для импорта — все модели уже есть в реестре или списке пользовательских моделей",
+    "skippingExistingModels": "Пропуск {count} существующих моделей"
   },
   "settings": {
     "title": "Настройки",

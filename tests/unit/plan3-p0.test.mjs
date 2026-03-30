@@ -239,7 +239,7 @@ test("CodexExecutor preserves native responses payloads for Codex passthrough", 
   assert.equal(transformed.stream, true);
   assert.equal(transformed.service_tier, "priority");
   assert.equal(transformed.instructions, "custom system prompt");
-  assert.equal(transformed.store, true);
+  assert.equal(transformed.store, false);
   assert.deepEqual(transformed.metadata, { source: "codex-client" });
   assert.equal(transformed.reasoning_effort, "high");
   assert.ok(!("_nativeCodexPassthrough" in transformed));
@@ -502,4 +502,30 @@ test("parseSSEToOpenAIResponse merges split tool call chunks by id without dupli
   assert.equal(parsed.choices[0].message.tool_calls[0].id, "call_abc");
   assert.equal(parsed.choices[0].message.tool_calls[0].function.name, "sum");
   assert.equal(parsed.choices[0].message.tool_calls[0].function.arguments, '{"a":1}');
+});
+
+test("parseSSEToOpenAIResponse normalizes delta.reasoning alias to reasoning_content", () => {
+  const rawSSE = [
+    `data: ${JSON.stringify({
+      id: "chatcmpl_2",
+      object: "chat.completion.chunk",
+      choices: [{ index: 0, delta: { reasoning: "Let me think..." } }],
+    })}`,
+    `data: ${JSON.stringify({
+      id: "chatcmpl_2",
+      object: "chat.completion.chunk",
+      choices: [{ index: 0, delta: { reasoning: " The answer is 4." } }],
+    })}`,
+    `data: ${JSON.stringify({
+      id: "chatcmpl_2",
+      object: "chat.completion.chunk",
+      choices: [{ index: 0, delta: { content: "2+2=4" }, finish_reason: "stop" }],
+    })}`,
+    "data: [DONE]",
+  ].join("\n");
+
+  const parsed = parseSSEToOpenAIResponse(rawSSE, "moonshotai/kimi-k2.5");
+  assert.ok(parsed);
+  assert.equal(parsed.choices[0].message.reasoning_content, "Let me think... The answer is 4.");
+  assert.equal(parsed.choices[0].message.content, "2+2=4");
 });

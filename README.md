@@ -876,6 +876,14 @@ docker compose --profile base up -d
 docker compose --profile cli up -d
 ```
 
+Dashboard support for Docker deployments now includes a one-click **Cloudflare Quick Tunnel** on `Dashboard → Endpoints`. The first enable downloads `cloudflared` only when needed, starts a temporary tunnel to your current `/v1` endpoint, and shows the generated `https://*.trycloudflare.com/v1` URL directly below your normal public URL.
+
+Notes:
+
+- Quick Tunnel URLs are temporary and change after every restart.
+- Managed install currently supports Linux, macOS, and Windows on `x64` / `arm64`.
+- Set `CLOUDFLARED_BIN=/absolute/path/to/cloudflared` if you want OmniRoute to use an existing binary instead of downloading one.
+
 **Using Docker Compose with Caddy (HTTPS Auto-TLS):**
 
 OmniRoute can be securely exposed using Caddy's automatic SSL provisioning. Ensure your domain's DNS A record points to your server's IP.
@@ -1256,12 +1264,14 @@ OmniRoute v2.0 is built as an operational platform, not just a relay proxy.
 | 💰 **Cost Tracking**             | Budget controls and per-model pricing visibility      |
 | 📈 **Analytics Visualizations**  | Model/provider usage insights and trend views         |
 | 🧪 **Evaluation Framework**      | Golden set testing with configurable match strategies |
+| 📡 **Live Diagnostics** 🆕       | Semantic cache bypass for accurate combo live testing |
 
 ### ☁️ Deployment & Platform
 
 | Feature                       | What It Does                                              |
 | ----------------------------- | --------------------------------------------------------- |
 | 🌐 **Deploy Anywhere**        | Localhost, VPS, Docker, Cloud environments                |
+| 🚇 **Cloudflare Tunnel** 🆕   | One-click Quick Tunnel integration from the dashboard     |
 | 💾 **Cloud Sync**             | Configuration sync via cloud worker                       |
 | 🔄 **Backup/Restore**         | Export/import and disaster recovery flows                 |
 | 🧙 **Onboarding Wizard**      | First-run guided setup                                    |

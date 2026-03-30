@@ -643,7 +643,9 @@
       "cursor": "कर्सर एआई कोड संपादक",
       "continue": "एआई असिस्टेंट जारी रखें",
       "opencode": "ओपनकोड एआई कोडिंग एजेंट (टर्मिनल)",
-      "kiro": "अमेज़ॅन किरो - एआई-संचालित आईडीई"
+      "kiro": "अमेज़ॅन किरो - एआई-संचालित आईडीई",
+      "windsurf": "Windsurf AI Code Editor",
+      "copilot": "GitHub Copilot AI Assistant"
     },
     "guides": {
       "cursor": {
@@ -1643,7 +1645,10 @@
     "chatPathHint": "गैर-मानक एपीआई वाले प्रदाताओं के लिए कस्टम चैट पथ (जैसे /v4/चैट/पूर्णताएं)",
     "modelsPathLabel": "मॉडल समापन बिंदु पथ",
     "modelsPathPlaceholder": "/मॉडल",
-    "modelsPathHint": "सत्यापन के लिए कस्टम मॉडल पथ (जैसे /v4/मॉडल)"
+    "modelsPathHint": "सत्यापन के लिए कस्टम मॉडल पथ (जैसे /v4/मॉडल)",
+    "allModelsAlreadyImported": "Semua model sudah diimpor",
+    "noNewModelsToImport": "Tidak ada model baru untuk diimpor — semua model sudah ada di registri atau daftar model kustom",
+    "skippingExistingModels": "Melewatkan {count} model yang sudah ada"
   },
   "settings": {
     "title": "सेटिंग्स",

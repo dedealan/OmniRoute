@@ -627,7 +627,9 @@
       "cursor": "Cursor AI 代码编辑器",
       "continue": "继续AI助手",
       "opencode": "OpenCode AI 编码智能体（终端）",
-      "kiro": "Amazon Kiro - AI 驱动 IDE"
+      "kiro": "Amazon Kiro - AI 驱动 IDE",
+      "windsurf": "Windsurf AI Code Editor",
+      "copilot": "GitHub Copilot AI Assistant"
     },
     "guides": {
       "cursor": {
@@ -1031,6 +1033,25 @@
     "cloudWorkerUnreachable": "无法连接到云 Worker。请确认云服务已运行（在 `/cloud` 中执行 `npm run dev`）。",
     "connectionFailed": "连接失败",
     "syncFailed": "同步云端数据失败",
+    "cloudflaredTitle": "Cloudflare Quick Tunnel",
+    "cloudflaredDescription": "为当前端点创建 Cloudflare Quick Tunnel。",
+    "cloudflaredUrlNotice": "创建一个临时的 Cloudflare Quick Tunnel。每次重启后 URL 都会变化。",
+    "cloudflaredEnable": "启用 Tunnel",
+    "cloudflaredInstallAndEnable": "安装并启用",
+    "cloudflaredDisable": "停止 Tunnel",
+    "cloudflaredRunning": "运行中",
+    "cloudflaredStarting": "启动中",
+    "cloudflaredStoppedState": "已停止",
+    "cloudflaredNotInstalled": "未安装",
+    "cloudflaredUnsupported": "不支持",
+    "cloudflaredError": "错误",
+    "cloudflaredStarted": "Cloudflare Tunnel 已启动",
+    "cloudflaredStopped": "Cloudflare Tunnel 已停止",
+    "cloudflaredRequestFailed": "更新 Cloudflare Tunnel 失败",
+    "cloudflaredTemporaryNote": "Quick Tunnel URL 是临时地址，每次重启后都会变化。",
+    "cloudflaredUnsupportedNote": "当前平台不支持托管安装。请自行安装 cloudflared，或通过 CLOUDFLARED_BIN 指向已有二进制文件。",
+    "cloudflaredIdleNote": "为当前端点创建一个临时的 Cloudflare Quick Tunnel。",
+    "cloudflaredLastError": "最近错误：{error}",
     "providerModelsTitle": "{provider} — 模型",
     "noModelsForProvider": "该提供商当前没有可用模型。",
     "chat": "聊天",
@@ -1648,7 +1669,10 @@
     "chatPathHint": "为非标准 API 的提供商自定义聊天路径（例如：/v4/chat/completions）",
     "modelsPathLabel": "模型端点路径",
     "modelsPathPlaceholder": "/models",
-    "modelsPathHint": "为验证流程自定义模型路径（例如：/v4/models）"
+    "modelsPathHint": "为验证流程自定义模型路径（例如：/v4/models）",
+    "allModelsAlreadyImported": "所有模型已导入",
+    "noNewModelsToImport": "没有新模型可导入 — 所有模型已在注册表或自定义模型列表中",
+    "skippingExistingModels": "跳过 {count} 个已有模型"
   },
   "settings": {
     "title": "设置",
