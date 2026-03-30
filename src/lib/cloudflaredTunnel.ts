@@ -13,6 +13,18 @@ const CLOUDFLARED_RELEASE_BASE =
   "https://github.com/cloudflare/cloudflared/releases/latest/download";
 const START_TIMEOUT_MS = 30000;
 const STOP_TIMEOUT_MS = 5000;
+const GENERIC_EXIT_ERROR_PREFIX = "cloudflared exited";
+const DEFAULT_CERT_FILE_CANDIDATES = [
+  "/etc/ssl/certs/ca-certificates.crt",
+  "/etc/pki/tls/certs/ca-bundle.crt",
+  "/etc/ssl/cert.pem",
+  "/private/etc/ssl/cert.pem",
+] as const;
+const DEFAULT_CERT_DIR_CANDIDATES = [
+  "/etc/ssl/certs",
+  "/etc/pki/tls/certs",
+  "/system/etc/security/cacerts",
+] as const;
 
 type CloudflaredInstallSource = "managed" | "path" | "env";
 type TunnelPhase = "unsupported" | "not_installed" | "stopped" | "starting" | "running" | "error";
@@ -22,6 +34,18 @@ type AssetSpec = {
   binaryName: string;
   archive: "none" | "tgz";
   downloadUrl: string;
+};
+
+type CloudflaredRuntimeDirs = {
+  runtimeRoot: string;
+  homeDir: string;
+  configDir: string;
+  cacheDir: string;
+  dataDir: string;
+  tempDir: string;
+  userProfileDir: string;
+  appDataDir: string;
+  localAppDataDir: string;
 };
 
 type BinaryResolution = {
@@ -125,6 +149,24 @@ function getLogFilePath() {
   return path.join(getTunnelDir(), "quick-tunnel.log");
 }
 
+export function getCloudflaredRuntimeDirs(): CloudflaredRuntimeDirs {
+  const runtimeRoot = path.join(getTunnelDir(), "runtime");
+  const homeDir = path.join(runtimeRoot, "home");
+  const userProfileDir = path.join(runtimeRoot, "userprofile");
+
+  return {
+    runtimeRoot,
+    homeDir,
+    configDir: path.join(runtimeRoot, "config"),
+    cacheDir: path.join(runtimeRoot, "cache"),
+    dataDir: path.join(runtimeRoot, "data"),
+    tempDir: path.join(runtimeRoot, "tmp"),
+    userProfileDir,
+    appDataDir: path.join(userProfileDir, "AppData", "Roaming"),
+    localAppDataDir: path.join(userProfileDir, "AppData", "Local"),
+  };
+}
+
 function getLocalTargetUrl() {
   const { apiPort } = getRuntimePorts();
   return `http://127.0.0.1:${apiPort}`;
@@ -136,6 +178,13 @@ function getTunnelApiUrl(publicUrl: string | null) {
 
 async function ensureTunnelDir() {
   await fs.mkdir(path.join(getTunnelDir(), "bin"), { recursive: true });
+}
+
+async function ensureTunnelRuntimeDirs() {
+  const runtimeDirs = getCloudflaredRuntimeDirs();
+  await Promise.all(
+    Object.values(runtimeDirs).map((dirPath) => fs.mkdir(dirPath, { recursive: true }))
+  );
 }
 
 async function readStateFile(): Promise<PersistedTunnelState> {
@@ -201,8 +250,55 @@ export function extractTryCloudflareUrl(text: string) {
   return match ? match[0] : null;
 }
 
+function normalizeCloudflaredLogLine(line: string) {
+  return line
+    .trim()
+    .replace(/^\d{4}-\d{2}-\d{2}T\S+\s+(?:INF|WRN|ERR)\s+/i, "")
+    .trim();
+}
+
+export function extractCloudflaredErrorMessage(text: string) {
+  const lines = String(text || "")
+    .split(/\r?\n/)
+    .map(normalizeCloudflaredLogLine)
+    .filter(Boolean);
+
+  for (let i = lines.length - 1; i >= 0; i--) {
+    if (/(?:\berror\b|\bfailed\b|\btls:\b|\bx509\b|\bcertificate\b)/i.test(lines[i])) {
+      return lines[i];
+    }
+  }
+
+  return null;
+}
+
+function isSpecificCloudflaredError(error: string | null | undefined) {
+  return !!error && !error.startsWith(GENERIC_EXIT_ERROR_PREFIX);
+}
+
+function getGenericExitError(code: number | null, signal: NodeJS.Signals | null) {
+  return `cloudflared exited unexpectedly (${code ?? "signal"}${signal ? `/${signal}` : ""})`;
+}
+
+export function getDefaultCloudflaredCertEnv(
+  existsSync: (candidate: string) => boolean = fsSync.existsSync,
+  certFileCandidates: readonly string[] = DEFAULT_CERT_FILE_CANDIDATES,
+  certDirCandidates: readonly string[] = DEFAULT_CERT_DIR_CANDIDATES
+) {
+  const certEnv: NodeJS.ProcessEnv = {};
+  const certFile = certFileCandidates.find((candidate) => existsSync(candidate));
+  const certDir = certDirCandidates.find((candidate) => existsSync(candidate));
+
+  if (certFile) certEnv.SSL_CERT_FILE = certFile;
+  if (certDir) certEnv.SSL_CERT_DIR = certDir;
+
+  return certEnv;
+}
+
 export function buildCloudflaredChildEnv(
-  sourceEnv: NodeJS.ProcessEnv = process.env
+  sourceEnv: NodeJS.ProcessEnv = process.env,
+  runtimeDirs: CloudflaredRuntimeDirs = getCloudflaredRuntimeDirs(),
+  defaultCertEnv: NodeJS.ProcessEnv = getDefaultCloudflaredCertEnv()
 ): NodeJS.ProcessEnv {
   const childEnv: NodeJS.ProcessEnv = {};
 
@@ -213,7 +309,29 @@ export function buildCloudflaredChildEnv(
     }
   }
 
+  childEnv.HOME = runtimeDirs.homeDir;
+  childEnv.XDG_CONFIG_HOME = runtimeDirs.configDir;
+  childEnv.XDG_CACHE_HOME = runtimeDirs.cacheDir;
+  childEnv.XDG_DATA_HOME = runtimeDirs.dataDir;
+  childEnv.USERPROFILE = runtimeDirs.userProfileDir;
+  childEnv.APPDATA = runtimeDirs.appDataDir;
+  childEnv.LOCALAPPDATA = runtimeDirs.localAppDataDir;
+
+  if (!childEnv.TMPDIR) childEnv.TMPDIR = runtimeDirs.tempDir;
+  if (!childEnv.TMP) childEnv.TMP = runtimeDirs.tempDir;
+  if (!childEnv.TEMP) childEnv.TEMP = runtimeDirs.tempDir;
+  if (!childEnv.SSL_CERT_FILE && defaultCertEnv.SSL_CERT_FILE) {
+    childEnv.SSL_CERT_FILE = defaultCertEnv.SSL_CERT_FILE;
+  }
+  if (!childEnv.SSL_CERT_DIR && defaultCertEnv.SSL_CERT_DIR) {
+    childEnv.SSL_CERT_DIR = defaultCertEnv.SSL_CERT_DIR;
+  }
+
   return childEnv;
+}
+
+export function getCloudflaredStartArgs(targetUrl: string) {
+  return ["tunnel", "--url", targetUrl, "--no-autoupdate"];
 }
 
 export function getCloudflaredAssetSpec(
@@ -393,7 +511,9 @@ async function finalizeProcessExit(code: number | null, signal: NodeJS.Signals |
   const lastError =
     code === 0 || signal === "SIGTERM" || signal === "SIGINT"
       ? null
-      : `cloudflared exited unexpectedly (${code ?? "signal"}${signal ? `/${signal}` : ""})`;
+      : isSpecificCloudflaredError(currentState.lastError)
+        ? currentState.lastError
+        : getGenericExitError(code, signal);
 
   tunnelProcess = null;
   tunnelPid = null;
@@ -493,6 +613,7 @@ export async function startCloudflaredTunnel(): Promise<CloudflaredTunnelStatus>
 
     await stopExistingTunnel();
     await ensureTunnelDir();
+    await ensureTunnelRuntimeDirs();
     await fs.writeFile(getLogFilePath(), "", "utf8");
 
     await writeStateFile({
@@ -507,14 +628,10 @@ export async function startCloudflaredTunnel(): Promise<CloudflaredTunnelStatus>
       startedAt: new Date().toISOString(),
     });
 
-    const child = spawn(
-      binary.binaryPath as string,
-      ["tunnel", "--url", targetUrl, "--no-autoupdate", "--protocol", "http2"],
-      {
-        stdio: ["ignore", "pipe", "pipe"],
-        env: buildCloudflaredChildEnv(),
-      }
-    );
+    const child = spawn(binary.binaryPath as string, getCloudflaredStartArgs(targetUrl), {
+      stdio: ["ignore", "pipe", "pipe"],
+      env: buildCloudflaredChildEnv(),
+    });
 
     tunnelProcess = child;
     tunnelPid = child.pid ?? null;
@@ -542,6 +659,14 @@ export async function startCloudflaredTunnel(): Promise<CloudflaredTunnelStatus>
         if (!text) return;
 
         await appendTunnelLog(source, text);
+        const errorMessage = source === "stderr" ? extractCloudflaredErrorMessage(text) : null;
+        if (errorMessage) {
+          await updateStateFile({
+            pid: child.pid,
+            status: "error",
+            lastError: errorMessage,
+          });
+        }
         const url = extractTryCloudflareUrl(text);
         if (!url) return;
 
@@ -588,11 +713,18 @@ export async function startCloudflaredTunnel(): Promise<CloudflaredTunnelStatus>
   try {
     return await startPromise;
   } catch (error) {
+    const currentState = await readStateFile();
+    const message = isSpecificCloudflaredError(currentState.lastError)
+      ? currentState.lastError
+      : error instanceof Error
+        ? error.message
+        : "Failed to start cloudflared tunnel";
+
     await updateStateFile({
       status: "error",
-      lastError: error instanceof Error ? error.message : "Failed to start cloudflared tunnel",
+      lastError: message,
     });
-    throw error;
+    throw new Error(message);
   } finally {
     startPromise = null;
   }

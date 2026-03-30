@@ -6,7 +6,9 @@ import Image from "next/image";
 import PropTypes from "prop-types";
 import ThemeToggle from "./ThemeToggle";
 import TokenHealthBadge from "./TokenHealthBadge";
+import DegradationBadge from "./DegradationBadge";
 import LanguageSelector from "./LanguageSelector";
+import ProviderIcon from "./ProviderIcon";
 import { useTranslations } from "next-intl";
 import {
   OAUTH_PROVIDERS,
@@ -16,7 +18,11 @@ import {
   ANTHROPIC_COMPATIBLE_PREFIX,
 } from "@/shared/constants/providers";
 
-function usePageInfo(pathname: string | null) {
+function usePageInfo(pathname: string | null): {
+  title: string;
+  description: string;
+  breadcrumbs: { label: string; href?: string; image?: string; providerId?: string }[];
+} {
   const t = useTranslations("header");
 
   if (!pathname) return { title: "", description: "", breadcrumbs: [] };
@@ -34,7 +40,7 @@ function usePageInfo(pathname: string | null) {
         description: "",
         breadcrumbs: [
           { label: t("providers"), href: "/dashboard/providers" },
-          { label: providerInfo.name, image: `/providers/${providerInfo.id}.png` },
+          { label: providerInfo.name, providerId: providerInfo.id },
         ],
       };
     }
@@ -45,7 +51,7 @@ function usePageInfo(pathname: string | null) {
         description: "",
         breadcrumbs: [
           { label: t("providers"), href: "/dashboard/providers" },
-          { label: t("openaiCompatible"), image: "/providers/oai-cc.png" },
+          { label: t("openaiCompatible"), providerId: "oai-cc" },
         ],
       };
     }
@@ -56,7 +62,7 @@ function usePageInfo(pathname: string | null) {
         description: "",
         breadcrumbs: [
           { label: t("providers"), href: "/dashboard/providers" },
-          { label: t("anthropicCompatible"), image: "/providers/anthropic-m.png" },
+          { label: t("anthropicCompatible"), providerId: "anthropic-m" },
         ],
       };
     }
@@ -167,6 +173,9 @@ export default function Header({ onMenuClick, showMenuButton = true }) {
                         }}
                       />
                     )}
+                    {crumb.providerId && (
+                      <ProviderIcon providerId={crumb.providerId} size={28} type="color" />
+                    )}
                     <h1 className="text-2xl font-semibold text-text-main tracking-tight">
                       {crumb.label}
                     </h1>
@@ -191,7 +200,8 @@ export default function Header({ onMenuClick, showMenuButton = true }) {
         {/* Theme toggle */}
         <ThemeToggle />
 
-        {/* Token health */}
+        {/* Degradation & Token health */}
+        <DegradationBadge />
         <TokenHealthBadge />
 
         {/* Logout button */}
