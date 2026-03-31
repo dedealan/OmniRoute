@@ -36,7 +36,7 @@
     "time": "Waktu",
     "details": "Detail",
     "created": "Dibuat",
-    "lastUsed": "Terakhir Digunakan",
+    "lastUsed": "Last Refreshed",
     "loadMore": "Muat Lebih Banyak",
     "noResults": "Tidak ada hasil yang ditemukan",
     "reloadPage": "Muat Ulang Halaman",
@@ -270,7 +270,11 @@
     "overviewDescription": "Pantau pola penggunaan API Anda, konsumsi token, biaya, dan tren aktivitas di semua penyedia dan model.",
     "evalsDescription": "Jalankan rangkaian evaluasi untuk menguji dan memvalidasi titik akhir LLM Anda. Bandingkan kualitas model, deteksi regresi, dan latensi tolok ukur.",
     "overview": "Ikhtisar",
-    "evals": "Evaluasi"
+    "evals": "Evaluasi",
+    "utilization": "Pemanfaatan",
+    "utilizationDescription": "Tren penggunaan kuota penyedia dan pelacakan batas tarif",
+    "comboHealth": "Kesehatan Kombinasi",
+    "comboHealthDescription": "Kuota tingkat kombinasi, distribusi penggunaan, dan metrik kinerja"
   },
   "apiManager": {
     "title": "Kunci API",
@@ -892,7 +896,7 @@
       }
     },
     "templateFreeStack": "Free Stack ($0)",
-    "templateFreeStackDesc": "Round-robin across all free providers: Kiro (Claude), iFlow (5 models), Qwen (4 models), Gemini CLI. Zero cost, never stops coding."
+    "templateFreeStackDesc": "Round-robin across all free providers: Kiro (Claude), Qoder (5 models), Qwen (4 models), Gemini CLI. Zero cost, never stops coding."
   },
   "costs": {
     "title": "Biaya",
@@ -1011,7 +1015,8 @@
     "webSearch": "Web Search",
     "webSearchDesc": "Unified web search across multiple providers with automatic failover and caching",
     "searchProvider": "Search Provider",
-    "searchProviderDesc": "This provider is used for web search via POST /v1/search. No model configuration needed — search providers are ready to use once an API key is connected."
+    "searchProviderDesc": "This provider is used for web search via POST /v1/search. No model configuration needed — search providers are ready to use once an API key is connected.",
+    "cloudflaredUrlNotice": "Creates a temporary Cloudflare Quick Tunnel. The URL changes after every restart."
   },
   "mcpDashboard": {
     "loading": "Loading MCP dashboard...",
@@ -2269,7 +2274,7 @@
     "loadingQuotas": "Memuat...",
     "account": "Akun",
     "modelQuotas": "Kuota Model",
-    "lastUsed": "Terakhir Digunakan",
+    "lastUsed": "Last Refreshed",
     "actions": "Tindakan",
     "refreshQuota": "Segarkan kuota",
     "today": "Hari ini",
@@ -2417,7 +2422,7 @@
     "waitingForGoogleAuthorization": "Waiting for Google authorization...",
     "waitingForOpenAIAuthorization": "Waiting for OpenAI authorization...",
     "waitingForAntigravityAuthorization": "Waiting for Antigravity authorization...",
-    "waitingForIFlowAuthorization": "Waiting for iFlow authorization...",
+    "waitingForQoderAuthorization": "Waiting for Qoder authorization...",
     "exchangingCodeForTokens": "Exchanging code for tokens...",
     "Authorization": "Otorisasi",
     "Content-Disposition": "Disposisi Konten"

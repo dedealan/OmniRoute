@@ -36,7 +36,7 @@
     "time": "الوقت",
     "details": "التفاصيل",
     "created": "تم إنشاؤها",
-    "lastUsed": "آخر استخدام",
+    "lastUsed": "Last Refreshed",
     "loadMore": "تحميل المزيد",
     "noResults": "لم يتم العثور على نتائج",
     "reloadPage": "إعادة تحميل الصفحة",
@@ -270,7 +270,11 @@
     "overviewDescription": "راقب أنماط استخدام واجهة برمجة التطبيقات (API) واستهلاك الرمز المميز والتكاليف واتجاهات النشاط عبر جميع مقدمي الخدمات والنماذج.",
     "evalsDescription": "قم بتشغيل مجموعات التقييم لاختبار نقاط نهاية LLM الخاصة بك والتحقق من صحتها. مقارنة جودة النموذج، واكتشاف الانحدارات، وقياس وقت الاستجابة.",
     "overview": "نظرة عامة",
-    "evals": "التقييمات"
+    "evals": "التقييمات",
+    "utilization": "الاستخدام",
+    "utilizationDescription": "اتجاهات استخدام حصة المزود وتتبع حدود المعدل",
+    "comboHealth": "صحة المجموعة",
+    "comboHealthDescription": "الحصة على مستوى المجموعة وتوزيع الاستخدام ومقاييس الأداء"
   },
   "apiManager": {
     "title": "مفاتيح واجهة برمجة التطبيقات",
@@ -892,7 +896,7 @@
       }
     },
     "templateFreeStack": "Free Stack ($0)",
-    "templateFreeStackDesc": "Round-robin across all free providers: Kiro (Claude), iFlow (5 models), Qwen (4 models), Gemini CLI. Zero cost, never stops coding."
+    "templateFreeStackDesc": "Round-robin across all free providers: Kiro (Claude), Qoder (5 models), Qwen (4 models), Gemini CLI. Zero cost, never stops coding."
   },
   "costs": {
     "title": "التكاليف",
@@ -1011,7 +1015,8 @@
     "webSearch": "Web Search",
     "webSearchDesc": "Unified web search across multiple providers with automatic failover and caching",
     "searchProvider": "Search Provider",
-    "searchProviderDesc": "This provider is used for web search via POST /v1/search. No model configuration needed — search providers are ready to use once an API key is connected."
+    "searchProviderDesc": "This provider is used for web search via POST /v1/search. No model configuration needed — search providers are ready to use once an API key is connected.",
+    "cloudflaredUrlNotice": "Creates a temporary Cloudflare Quick Tunnel. The URL changes after every restart."
   },
   "mcpDashboard": {
     "loading": "جارٍ تحميل لوحة تحكم MCP...",
@@ -2269,7 +2274,7 @@
     "loadingQuotas": "جار التحميل...",
     "account": "الحساب",
     "modelQuotas": "الحصص النموذجية",
-    "lastUsed": "آخر استخدام",
+    "lastUsed": "Last Refreshed",
     "actions": "الإجراءات",
     "refreshQuota": "تحديث الحصة",
     "today": "اليوم",
@@ -2419,7 +2424,7 @@
     "waitingForGoogleAuthorization": "في انتظار إذن Google...",
     "waitingForOpenAIAuthorization": "في انتظار ترخيص OpenAI...",
     "waitingForAntigravityAuthorization": "في انتظار تصريح مكافحة الجاذبية...",
-    "waitingForIFlowAuthorization": "في انتظار ترخيص iFlow...",
+    "waitingForQoderAuthorization": "في انتظار ترخيص Qoder...",
     "exchangingCodeForTokens": "استبدال الكود بالرموز..."
   },
   "landing": {

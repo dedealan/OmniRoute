@@ -39,11 +39,11 @@ Complete guide for configuring providers, creating combos, integrating CLI tools
 | **💰 CHEAP**        | GLM-4.7           | $0.6/1M     | Daily 10AM       | Budget backup        |
 |                     | MiniMax M2.1      | $0.2/1M     | 5-hour rolling   | Cheapest option      |
 |                     | Kimi K2           | $9/mo flat  | 10M tokens/mo    | Predictable cost     |
-| **🆓 FREE**         | iFlow             | $0          | Unlimited        | 8 models free        |
+| **🆓 FREE**         | Qoder             | $0          | Unlimited        | 8 models free        |
 |                     | Qwen              | $0          | Unlimited        | 3 models free        |
 |                     | Kiro              | $0          | Unlimited        | Claude free          |
 
-**💡 Pro Tip:** Start with Gemini CLI (180K free/month) + iFlow (unlimited free) combo = $0 cost!
+**💡 Pro Tip:** Start with Gemini CLI (180K free/month) + Qoder (unlimited free) combo = $0 cost!
 
 ---
 
@@ -193,10 +193,10 @@ Models:
 
 ### 🆓 FREE Providers
 
-#### iFlow (8 FREE models)
+#### Qoder (8 FREE models)
 
 ```bash
-Dashboard → Connect iFlow → OAuth login → Unlimited usage
+Dashboard → Connect Qoder → OAuth login → Unlimited usage
 
 Models: if/kimi-k2-thinking, if/qwen3-coder-plus, if/glm-4.7, if/minimax-m2, if/deepseek-r1
 ```
@@ -507,25 +507,26 @@ post_install() {
 
 ### Environment Variables
 
-| Variable                  | Default                              | Description                                                      |
-| ------------------------- | ------------------------------------ | ---------------------------------------------------------------- |
-| `JWT_SECRET`              | `omniroute-default-secret-change-me` | JWT signing secret (**change in production**)                    |
-| `INITIAL_PASSWORD`        | `123456`                             | First login password                                             |
-| `DATA_DIR`                | `~/.omniroute`                       | Data directory (db, usage, logs)                                 |
-| `PORT`                    | framework default                    | Service port (`20128` in examples)                               |
-| `HOSTNAME`                | framework default                    | Bind host (Docker defaults to `0.0.0.0`)                         |
-| `NODE_ENV`                | runtime default                      | Set `production` for deploy                                      |
-| `BASE_URL`                | `http://localhost:20128`             | Server-side internal base URL                                    |
-| `CLOUD_URL`               | `https://omniroute.dev`              | Cloud sync endpoint base URL                                     |
-| `API_KEY_SECRET`          | `endpoint-proxy-api-key-secret`      | HMAC secret for generated API keys                               |
-| `REQUIRE_API_KEY`         | `false`                              | Enforce Bearer API key on `/v1/*`                                |
-| `ALLOW_API_KEY_REVEAL`    | `false`                              | Allow Api Manager to copy full API keys on demand                |
-| `ENABLE_REQUEST_LOGS`     | `false`                              | Enables request/response logs                                    |
-| `AUTH_COOKIE_SECURE`      | `false`                              | Force `Secure` auth cookie (behind HTTPS reverse proxy)          |
-| `CLOUDFLARED_BIN`         | unset                                | Use an existing `cloudflared` binary instead of managed download |
-| `OMNIROUTE_MEMORY_MB`     | `512`                                | Node.js heap limit in MB                                         |
-| `PROMPT_CACHE_MAX_SIZE`   | `50`                                 | Max prompt cache entries                                         |
-| `SEMANTIC_CACHE_MAX_SIZE` | `100`                                | Max semantic cache entries                                       |
+| Variable                               | Default                              | Description                                                                                |
+| -------------------------------------- | ------------------------------------ | ------------------------------------------------------------------------------------------ |
+| `JWT_SECRET`                           | `omniroute-default-secret-change-me` | JWT signing secret (**change in production**)                                              |
+| `INITIAL_PASSWORD`                     | `123456`                             | First login password                                                                       |
+| `DATA_DIR`                             | `~/.omniroute`                       | Data directory (db, usage, logs)                                                           |
+| `PORT`                                 | framework default                    | Service port (`20128` in examples)                                                         |
+| `HOSTNAME`                             | framework default                    | Bind host (Docker defaults to `0.0.0.0`)                                                   |
+| `NODE_ENV`                             | runtime default                      | Set `production` for deploy                                                                |
+| `BASE_URL`                             | `http://localhost:20128`             | Server-side internal base URL                                                              |
+| `CLOUD_URL`                            | `https://omniroute.dev`              | Cloud sync endpoint base URL                                                               |
+| `API_KEY_SECRET`                       | `endpoint-proxy-api-key-secret`      | HMAC secret for generated API keys                                                         |
+| `REQUIRE_API_KEY`                      | `false`                              | Enforce Bearer API key on `/v1/*`                                                          |
+| `ALLOW_API_KEY_REVEAL`                 | `false`                              | Allow Api Manager to copy full API keys on demand                                          |
+| `DISABLE_SQLITE_AUTO_BACKUP` | `false`                                        | Disable automatic SQLite snapshots before writes/import/restore; manual backups still work |
+| `ENABLE_REQUEST_LOGS`                  | `false`                              | Enables request/response logs                                                              |
+| `AUTH_COOKIE_SECURE`                   | `false`                              | Force `Secure` auth cookie (behind HTTPS reverse proxy)                                    |
+| `CLOUDFLARED_BIN`                      | unset                                | Use an existing `cloudflared` binary instead of managed download                           |
+| `OMNIROUTE_MEMORY_MB`                  | `512`                                | Node.js heap limit in MB                                                                   |
+| `PROMPT_CACHE_MAX_SIZE`                | `50`                                 | Max prompt cache entries                                                                   |
+| `SEMANTIC_CACHE_MAX_SIZE`              | `100`                                | Max semantic cache entries                                                                 |
 
 For the full environment variable reference, see the [README](../README.md).
 
@@ -548,7 +549,7 @@ For the full environment variable reference, see the [README](../README.md).
 
 **MiniMax (`minimax/`)** — $0.2/1M: `minimax/MiniMax-M2.1`
 
-**iFlow (`if/`)** — FREE: `if/kimi-k2-thinking`, `if/qwen3-coder-plus`, `if/deepseek-r1`
+**Qoder (`if/`)** — FREE: `if/kimi-k2-thinking`, `if/qwen3-coder-plus`, `if/deepseek-r1`
 
 **Qwen (`qw/`)** — FREE: `qw/qwen3-coder-plus`, `qw/qwen3-coder-flash`
 
@@ -595,6 +596,11 @@ curl -X POST http://localhost:20128/api/provider-models \
 ```
 
 Or use Dashboard: **Providers → [Provider] → Custom Models**.
+
+Notes:
+
+- OpenRouter and OpenAI/Anthropic-compatible providers are managed from **Available Models** only. Manual add, import, and auto-sync all land in the same available-model list, so there is no separate Custom Models section for those providers.
+- The **Custom Models** section is intended for providers that do not expose managed available-model imports.
 
 ### Dedicated Provider Routes
 
@@ -763,11 +769,11 @@ OmniRoute implements provider-level resilience with four components:
 
 Manage database backups in **Dashboard → Settings → System & Storage**.
 
-| Action                   | Description                                                                                                                    |
-| ------------------------ | ------------------------------------------------------------------------------------------------------------------------------ |
-| **Export Database**      | Downloads the current SQLite database as a `.sqlite` file                                                                      |
-| **Export All (.tar.gz)** | Downloads a full backup archive including: database, settings, combos, provider connections (no credentials), API key metadata |
-| **Import Database**      | Upload a `.sqlite` file to replace the current database. A pre-import backup is automatically created                          |
+| Action                   | Description                                                                                                                                              |
+| ------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Export Database**      | Downloads the current SQLite database as a `.sqlite` file                                                                                                |
+| **Export All (.tar.gz)** | Downloads a full backup archive including: database, settings, combos, provider connections (no credentials), API key metadata                           |
+| **Import Database**      | Upload a `.sqlite` file to replace the current database. A pre-import backup is automatically created unless `DISABLE_SQLITE_AUTO_BACKUP=true` |
 
 ```bash
 # API: Export database

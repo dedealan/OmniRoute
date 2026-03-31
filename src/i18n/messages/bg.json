@@ -36,7 +36,7 @@
     "time": "време",
     "details": "Подробности",
     "created": "Създаден",
-    "lastUsed": "Последно използвано",
+    "lastUsed": "Last Refreshed",
     "loadMore": "Зареди още",
     "noResults": "Няма намерени резултати",
     "reloadPage": "Презареди страницата",
@@ -268,9 +268,13 @@
   "analytics": {
     "title": "Анализ",
     "overviewDescription": "Наблюдавайте своите модели на използване на API, потреблението на токени, разходите и тенденциите в дейността при всички доставчици и модели.",
-    "evalsDescription": "Изпълнете пакети за оценка, за да тествате и валидирате вашите крайни точки на LLM. Сравнете качеството на модела, открийте регресии и сравните латентността.",
+    "evalsDescription": "Изпълнете пакети за оценка, за да тествате и валидирате вашите крайни точки на LLM. Сравнете качеството на модела, открийте регресии и сравнете латентността.",
     "overview": "Преглед",
-    "evals": "Оценки"
+    "evals": "Оценки",
+    "utilization": "Използване",
+    "utilizationDescription": "Тенденции в използването на квотата на доставчика и проследяване на ограниченията на скоростта",
+    "comboHealth": "Здраве на комбинацията",
+    "comboHealthDescription": "Квота на ниво комбинация, разпределение на използването и метрики на производителността"
   },
   "apiManager": {
     "title": "API ключове",
@@ -892,7 +896,7 @@
       }
     },
     "templateFreeStack": "Free Stack ($0)",
-    "templateFreeStackDesc": "Round-robin across all free providers: Kiro (Claude), iFlow (5 models), Qwen (4 models), Gemini CLI. Zero cost, never stops coding."
+    "templateFreeStackDesc": "Round-robin across all free providers: Kiro (Claude), Qoder (5 models), Qwen (4 models), Gemini CLI. Zero cost, never stops coding."
   },
   "costs": {
     "title": "Разходи",
@@ -1011,7 +1015,8 @@
     "webSearch": "Web Search",
     "webSearchDesc": "Unified web search across multiple providers with automatic failover and caching",
     "searchProvider": "Search Provider",
-    "searchProviderDesc": "This provider is used for web search via POST /v1/search. No model configuration needed — search providers are ready to use once an API key is connected."
+    "searchProviderDesc": "This provider is used for web search via POST /v1/search. No model configuration needed — search providers are ready to use once an API key is connected.",
+    "cloudflaredUrlNotice": "Creates a temporary Cloudflare Quick Tunnel. The URL changes after every restart."
   },
   "mcpDashboard": {
     "loading": "Зареждане на таблото за управление на MCP...",
@@ -2269,7 +2274,7 @@
     "loadingQuotas": "Зареждане...",
     "account": "акаунт",
     "modelQuotas": "Моделни квоти",
-    "lastUsed": "Последно използвано",
+    "lastUsed": "Last Refreshed",
     "actions": "Действия",
     "refreshQuota": "Опресняване на квотата",
     "today": "Днес",
@@ -2419,7 +2424,7 @@
     "waitingForGoogleAuthorization": "Изчаква се разрешение от Google...",
     "waitingForOpenAIAuthorization": "Изчаква се разрешение за OpenAI...",
     "waitingForAntigravityAuthorization": "Изчаква се разрешение за антигравитация...",
-    "waitingForIFlowAuthorization": "Изчаква се разрешение за iFlow...",
+    "waitingForQoderAuthorization": "Изчаква се разрешение за Qoder...",
     "exchangingCodeForTokens": "Размяна на код за токени..."
   },
   "landing": {

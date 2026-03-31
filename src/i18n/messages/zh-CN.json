@@ -36,7 +36,7 @@
     "time": "时间",
     "details": "详情",
     "created": "已创建",
-    "lastUsed": "最后使用",
+    "lastUsed": "Last Refreshed",
     "loadMore": "加载更多",
     "noResults": "没有找到结果",
     "reloadPage": "重新加载页面",
@@ -275,7 +275,11 @@
     "overviewDescription": "监控所有提供商和模型的 API 使用模式、令牌消耗、成本和活动趋势。",
     "evalsDescription": "运行评估套件来测试和验证您的 LLM 端点。比较模型质量、检测回归和基准延迟。",
     "overview": "概述",
-    "evals": "评测"
+    "evals": "评测",
+    "utilization": "利用率",
+    "utilizationDescription": "提供商配额使用趋势和速率限制跟踪",
+    "comboHealth": "组合健康状况",
+    "comboHealthDescription": "组合级别配额、使用分布和性能指标"
   },
   "apiManager": {
     "title": "API 密钥",
@@ -948,7 +952,7 @@
       }
     },
     "templateFreeStack": "免费栈（$0）",
-    "templateFreeStackDesc": "在所有免费提供商之间进行轮询：Kiro（Claude）、iFlow（5 个模型）、Qwen（4 个模型）、Gemini CLI。零成本，编码不中断。"
+    "templateFreeStackDesc": "在所有免费提供商之间进行轮询：Kiro（Claude）、Qoder（5 个模型）、Qwen（4 个模型）、Gemini CLI。零成本，编码不中断。"
   },
   "costs": {
     "title": "成本",
@@ -1672,7 +1676,13 @@
     "modelsPathHint": "为验证流程自定义模型路径（例如：/v4/models）",
     "allModelsAlreadyImported": "所有模型已导入",
     "noNewModelsToImport": "没有新模型可导入 — 所有模型已在注册表或自定义模型列表中",
-    "skippingExistingModels": "跳过 {count} 个已有模型"
+    "skippingExistingModels": "跳过 {count} 个已有模型",
+    "applyCodexAuthLocal": "Apply auth",
+    "exportCodexAuthFile": "Export auth",
+    "codexAuthAppliedLocal": "Codex auth.json applied locally",
+    "codexAuthApplyFailed": "Failed to apply Codex auth.json locally",
+    "codexAuthExported": "Codex auth.json exported",
+    "codexAuthExportFailed": "Failed to export Codex auth.json"
   },
   "settings": {
     "title": "设置",
@@ -2084,7 +2094,18 @@
     "routingAdvancedGuideHint2": "如果提供商的质量/成本各不相同，请从“成本选择”开始进行后台工作，并从“最少使用”开始进行平衡磨损。",
     "comboDefaultsGuideTitle": "如何调整组合默认值",
     "comboDefaultsGuideHint1": "在低延迟流中保持较低的重试次数；仅增加长生成任务的超时。",
-    "comboDefaultsGuideHint2": "当一个提供程序需要与全局默认值不同的超时/重试行为时，请使用提供程序覆盖。"
+    "comboDefaultsGuideHint2": "当一个提供程序需要与全局默认值不同的超时/重试行为时，请使用提供程序覆盖。",
+    "debugToggle": "Enable Debug Mode",
+    "sidebarVisibilityToggle": "Show Sidebar Items",
+    "cacheSettings": "Cache Settings",
+    "semanticCache": "Semantic Cache",
+    "maxEntries": "Max Entries",
+    "ttlMinutes": "TTL (minutes)",
+    "strategy": "Strategy",
+    "preserveClientCache": "Preserve Client Cache",
+    "enabled": "Enabled",
+    "loading": "Loading...",
+    "save": "Save"
   },
   "translator": {
     "title": "翻译者",
@@ -2359,7 +2380,7 @@
     "loadingQuotas": "正在加载...",
     "account": "账户",
     "modelQuotas": "模型配额",
-    "lastUsed": "最后使用",
+    "lastUsed": "Last Refreshed",
     "actions": "操作",
     "refreshQuota": "刷新配额",
     "today": "今天",
@@ -2509,7 +2530,7 @@
     "waitingForGoogleAuthorization": "正在等待 Google 授权...",
     "waitingForOpenAIAuthorization": "正在等待 OpenAI 授权...",
     "waitingForAntigravityAuthorization": "正在等待 Antigravity 授权...",
-    "waitingForIFlowAuthorization": "正在等待 iFlow 授权...",
+    "waitingForQoderAuthorization": "正在等待 Qoder 授权...",
     "exchangingCodeForTokens": "正在用授权码换取 Tokens..."
   },
   "landing": {
@@ -2908,6 +2929,30 @@
     "behaviorTwoTier": "Two-tier storage: in-memory LRU (fast) + SQLite (persistent across restarts).",
     "behaviorTtl": "Default TTL: 30 minutes. Configure via {envVar}.",
     "activeDedupKeys": "Active Dedup Keys",
-    "dedupWindow": "Dedup Window"
+    "dedupWindow": "Dedup Window",
+    "promptCache": "Prompt Cache (Provider-Side)",
+    "cachedRequests": "Cached Requests",
+    "cacheHitRate": "Cache Hit Rate",
+    "cachedTokens": "Cached Tokens",
+    "cacheCreationTokens": "Cache Creation Tokens",
+    "byProvider": "Breakdown by Provider",
+    "provider": "Provider",
+    "requests": "Requests",
+    "inputTokens": "Input Tokens",
+    "cachedTokensCol": "Cached",
+    "cacheCreation": "Creation",
+    "trend24h": "Cache Trend (24h)",
+    "cached": "Cached",
+    "overview": "Overview",
+    "entries": "Entries",
+    "searchEntries": "Search entries...",
+    "search": "Search",
+    "loading": "Loading...",
+    "noEntries": "No cache entries found",
+    "signature": "Signature",
+    "model": "Model",
+    "created": "Created",
+    "expires": "Expires",
+    "actions": "Actions"
   }
 }

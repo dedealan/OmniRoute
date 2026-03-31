@@ -36,7 +36,7 @@
     "time": "Čas",
     "details": "Podrobnosti",
     "created": "Vytvořeno",
-    "lastUsed": "Naposledy použité",
+    "lastUsed": "Last Refreshed",
     "loadMore": "Načíst více",
     "noResults": "Nenalezeny žádné výsledky",
     "reloadPage": "Znovu načíst stránku",
@@ -270,7 +270,11 @@
     "overviewDescription": "Sledujte vzorce používání API, spotřebu tokenů, náklady a trendy aktivity napříč všemi poskytovateli a modely.",
     "evalsDescription": "Spusťte sady vyhodnocovacích programů pro test a ověření LLM koncových bodů. Porovnejte kvalitu modelů, detekujte zhoršení a porovnejte latenci.",
     "overview": "Přehled",
-    "evals": "Hodnocení"
+    "evals": "Hodnocení",
+    "utilization": "Využití",
+    "utilizationDescription": "Trendy využití kvót poskytovatele a sledování limitů rychlosti",
+    "comboHealth": "Zdraví Combo",
+    "comboHealthDescription": "Kvóta na úrovni kombinace, distribuce využití a metriky výkonu"
   },
   "apiManager": {
     "title": "API Klíče",
@@ -943,7 +947,7 @@
       }
     },
     "templateFreeStack": "Volný zásobník (0 $)",
-    "templateFreeStackDesc": "Round-robin mezi všemi bezplatnými poskytovateli: Kiro (Claude), iFlow (5 modelů), Qwen (4 modely), Gemini CLI. Bez nákladů, nikdy nepřestaňte kódovat."
+    "templateFreeStackDesc": "Round-robin mezi všemi bezplatnými poskytovateli: Kiro (Claude), Qoder (5 modelů), Qwen (4 modely), Gemini CLI. Bez nákladů, nikdy nepřestaňte kódovat."
   },
   "costs": {
     "title": "Náklady",
@@ -1062,7 +1066,8 @@
     "a2aQuickStartStep2": "Odešlete požadavky JSON-RPC na `POST /a2a` pomocí `message/send` nebo `message/stream`.",
     "a2aQuickStartStep3": "Sledujte a ovládejte úkoly pomocí příkazů `tasks/get` a `tasks/cancel`.",
     "completionsLegacy": "Completions (Zastaralé)",
-    "completionsLegacyDesc": "Zastaralé OpenAI text completion – akceptuje oba formáty, prompt string i messages array."
+    "completionsLegacyDesc": "Zastaralé OpenAI text completion – akceptuje oba formáty, prompt string i messages array.",
+    "cloudflaredUrlNotice": "Creates a temporary Cloudflare Quick Tunnel. The URL changes after every restart."
   },
   "endpoints": {
     "tabProxy": "Koncová Proxy",
@@ -2332,7 +2337,7 @@
     "loadingQuotas": "Načítám...",
     "account": "Účet",
     "modelQuotas": "Kvóty Modelu",
-    "lastUsed": "Naposledy použito",
+    "lastUsed": "Last Refreshed",
     "actions": "Akce",
     "refreshQuota": "Obnovit Kvótu",
     "today": "Dnes",
@@ -2480,7 +2485,7 @@
     "waitingForGoogleAuthorization": "Čekám na Google autorizaci...",
     "waitingForOpenAIAuthorization": "Čekám na OpenAI autorizaci...",
     "waitingForAntigravityAuthorization": "Čekám na Antigravity autorizaci...",
-    "waitingForIFlowAuthorization": "Čekám na iFlow autorizaci...",
+    "waitingForQoderAuthorization": "Čekám na Qoder autorizaci...",
     "exchangingCodeForTokens": "Vyměňuji kód za tokeny...",
     "Authorization": "Autorizace",
     "Content-Disposition": "Obsah-Dispozice"

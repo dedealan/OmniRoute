@@ -36,7 +36,7 @@
     "time": "समय",
     "details": "विवरण",
     "created": "बनाया गया",
-    "lastUsed": "अंतिम बार उपयोग किया गया",
+    "lastUsed": "Last Refreshed",
     "loadMore": "अधिक लोड करें",
     "noResults": "कोई परिणाम नहीं मिला",
     "reloadPage": "पृष्ठ पुनः लोड करें",
@@ -270,7 +270,11 @@
     "overviewDescription": "सभी प्रदाताओं और मॉडलों में अपने एपीआई उपयोग पैटर्न, टोकन खपत, लागत और गतिविधि रुझान की निगरानी करें।",
     "evalsDescription": "अपने एलएलएम समापन बिंदुओं का परीक्षण और सत्यापन करने के लिए मूल्यांकन सुइट चलाएँ। मॉडल गुणवत्ता की तुलना करें, प्रतिगमन और बेंचमार्क विलंबता का पता लगाएं।",
     "overview": "सिंहावलोकन",
-    "evals": "एवल्स"
+    "evals": "एवल्स",
+    "utilization": "उपयोग",
+    "utilizationDescription": "प्रदाता कोटा उपयोग रुझान और दर सीमा ट्रैकिंग",
+    "comboHealth": "कॉम्बो स्वास्थ्य",
+    "comboHealthDescription": "कॉम्बो-स्तरीय कोटा, उपयोग वितरण और प्रदर्शन मेट्रिक्स"
   },
   "apiManager": {
     "title": "एपीआई कुंजी",
@@ -1062,7 +1066,8 @@
     "a2aQuickStartStep2": "`message/send` या `message/stream` का उपयोग करके JSON-RPC अनुरोधों को `POST /a2a` पर भेजें।",
     "a2aQuickStartStep3": "`कार्य/प्राप्त करें` और `कार्य/रद्द करें` का उपयोग करके कार्यों को ट्रैक और नियंत्रित करें।",
     "completionsLegacy": "पूर्णताएँ (विरासत)",
-    "completionsLegacyDesc": "लीगेसी ओपनएआई टेक्स्ट पूर्णताएँ - शीघ्र स्ट्रिंग और संदेश सरणी प्रारूप दोनों को स्वीकार करती हैं"
+    "completionsLegacyDesc": "लीगेसी ओपनएआई टेक्स्ट पूर्णताएँ - शीघ्र स्ट्रिंग और संदेश सरणी प्रारूप दोनों को स्वीकार करती हैं",
+    "cloudflaredUrlNotice": "Creates a temporary Cloudflare Quick Tunnel. The URL changes after every restart."
   },
   "endpoints": {
     "tabProxy": "समापन बिंदु प्रॉक्सी",
@@ -2332,7 +2337,7 @@
     "loadingQuotas": "लोड हो रहा है...",
     "account": "खाता",
     "modelQuotas": "मॉडल कोटा",
-    "lastUsed": "अंतिम बार उपयोग किया गया",
+    "lastUsed": "Last Refreshed",
     "actions": "क्रियाएँ",
     "refreshQuota": "ताज़ा कोटा",
     "today": "आज",
@@ -2482,7 +2487,7 @@
     "waitingForGoogleAuthorization": "Google प्राधिकरण की प्रतीक्षा की जा रही है...",
     "waitingForOpenAIAuthorization": "OpenAI प्राधिकरण की प्रतीक्षा की जा रही है...",
     "waitingForAntigravityAuthorization": "एंटीग्रेविटी प्राधिकरण की प्रतीक्षा की जा रही है...",
-    "waitingForIFlowAuthorization": "iFlow प्राधिकरण की प्रतीक्षा की जा रही है...",
+    "waitingForQoderAuthorization": "Qoder प्राधिकरण की प्रतीक्षा की जा रही है...",
     "exchangingCodeForTokens": "टोकन के लिए कोड का आदान-प्रदान..."
   },
   "landing": {

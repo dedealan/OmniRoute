@@ -2,11 +2,11 @@
 
 // Free Providers
 export const FREE_PROVIDERS = {
-  iflow: { id: "iflow", alias: "if", name: "iFlow AI", icon: "water_drop", color: "#6366F1" },
+  qoder: { id: "qoder", alias: "if", name: "Qoder AI", icon: "water_drop", color: "#6366F1" },
   qwen: { id: "qwen", alias: "qw", name: "Qwen Code", icon: "psychology", color: "#10B981" },
   "gemini-cli": {
     id: "gemini-cli",
-    alias: "gc",
+    alias: "gemini-cli",
     name: "Gemini CLI",
     icon: "terminal",
     color: "#4285F4",

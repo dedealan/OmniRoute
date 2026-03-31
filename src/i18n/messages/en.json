@@ -36,7 +36,7 @@
     "time": "Time",
     "details": "Details",
     "created": "Created",
-    "lastUsed": "Last Used",
+    "lastUsed": "Last Refreshed",
     "loadMore": "Load More",
     "noResults": "No results found",
     "reloadPage": "Reload Page",
@@ -275,7 +275,11 @@
     "overviewDescription": "Monitor your API usage patterns, token consumption, costs, and activity trends across all providers and models.",
     "evalsDescription": "Run evaluation suites to test and validate your LLM endpoints. Compare model quality, detect regressions, and benchmark latency.",
     "overview": "Overview",
-    "evals": "Evals"
+    "evals": "Evals",
+    "utilization": "Utilization",
+    "utilizationDescription": "Provider quota usage trends and rate limit tracking",
+    "comboHealth": "Combo Health",
+    "comboHealthDescription": "Combo-level quota, usage distribution, and performance metrics"
   },
   "apiManager": {
     "title": "API Keys",
@@ -948,7 +952,7 @@
       }
     },
     "templateFreeStack": "Free Stack ($0)",
-    "templateFreeStackDesc": "Round-robin across all free providers: Kiro (Claude), iFlow (5 models), Qwen (4 models), Gemini CLI. Zero cost, never stops coding."
+    "templateFreeStackDesc": "Round-robin across all free providers: Kiro (Claude), Qoder (5 models), Qwen (4 models), Gemini CLI. Zero cost, never stops coding."
   },
   "costs": {
     "title": "Costs",
@@ -2382,7 +2386,7 @@
     "loadingQuotas": "Loading...",
     "account": "Account",
     "modelQuotas": "Model Quotas",
-    "lastUsed": "Last Used",
+    "lastUsed": "Last Refreshed",
     "actions": "Actions",
     "refreshQuota": "Refresh quota",
     "today": "Today",
@@ -2532,7 +2536,7 @@
     "waitingForGoogleAuthorization": "Waiting for Google authorization...",
     "waitingForOpenAIAuthorization": "Waiting for OpenAI authorization...",
     "waitingForAntigravityAuthorization": "Waiting for Antigravity authorization...",
-    "waitingForIFlowAuthorization": "Waiting for iFlow authorization...",
+    "waitingForQoderAuthorization": "Waiting for Qoder authorization...",
     "exchangingCodeForTokens": "Exchanging code for tokens..."
   },
   "landing": {
@@ -2937,6 +2941,19 @@
     "cacheHitRate": "Cache Hit Rate",
     "cachedTokens": "Cached Tokens",
     "cacheCreationTokens": "Cache Creation Tokens",
+    "cacheMetrics": "Prompt Cache Metrics",
+    "withCacheControl": "With Cache Control",
+    "cachedTokensRead": "Cached Tokens (Read)",
+    "cacheCreationWrite": "Cache Creation (Write)",
+    "cacheReuseRatio": "Cache Reuse Ratio",
+    "cacheReuseRatioDesc": "Cached tokens / Total input tokens",
+    "estCostSaved": "Est. Cost Saved",
+    "requestsShort": "reqs",
+    "inputShort": "In",
+    "cachedShort": "Cached",
+    "writeShort": "Write",
+    "resetting": "Resetting...",
+    "resetMetrics": "Reset Metrics",
     "byProvider": "Breakdown by Provider",
     "provider": "Provider",
     "requests": "Requests",

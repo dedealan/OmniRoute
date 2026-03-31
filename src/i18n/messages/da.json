@@ -36,7 +36,7 @@
     "time": "Tid",
     "details": "Detaljer",
     "created": "Oprettet",
-    "lastUsed": "Sidst brugt",
+    "lastUsed": "Last Refreshed",
     "loadMore": "Indlæs mere",
     "noResults": "Ingen resultater fundet",
     "reloadPage": "Genindlæs siden",
@@ -270,7 +270,11 @@
     "overviewDescription": "Overvåg dine API-brugsmønstre, tokenforbrug, omkostninger og aktivitetstendenser på tværs af alle udbydere og modeller.",
     "evalsDescription": "Kør evalueringspakker for at teste og validere dine LLM-endepunkter. Sammenlign modelkvalitet, detekter regressioner og benchmark-forsinkelse.",
     "overview": "Oversigt",
-    "evals": "Evals"
+    "evals": "Evals",
+    "utilization": "Udnyttelse",
+    "utilizationDescription": "Leverandørkvoteforbrugstendenser og hastighedsgrænseovervågning",
+    "comboHealth": "Kombosundhed",
+    "comboHealthDescription": "Komboniveaudkvote, fordeling af brug og ydeevnemålinger"
   },
   "apiManager": {
     "title": "API nøgler",
@@ -892,7 +896,7 @@
       }
     },
     "templateFreeStack": "Free Stack ($0)",
-    "templateFreeStackDesc": "Round-robin across all free providers: Kiro (Claude), iFlow (5 models), Qwen (4 models), Gemini CLI. Zero cost, never stops coding."
+    "templateFreeStackDesc": "Round-robin across all free providers: Kiro (Claude), Qoder (5 models), Qwen (4 models), Gemini CLI. Zero cost, never stops coding."
   },
   "costs": {
     "title": "Omkostninger",
@@ -1011,7 +1015,8 @@
     "webSearch": "Web Search",
     "webSearchDesc": "Unified web search across multiple providers with automatic failover and caching",
     "searchProvider": "Search Provider",
-    "searchProviderDesc": "This provider is used for web search via POST /v1/search. No model configuration needed — search providers are ready to use once an API key is connected."
+    "searchProviderDesc": "This provider is used for web search via POST /v1/search. No model configuration needed — search providers are ready to use once an API key is connected.",
+    "cloudflaredUrlNotice": "Creates a temporary Cloudflare Quick Tunnel. The URL changes after every restart."
   },
   "mcpDashboard": {
     "loading": "Indlæser MCP-dashboard...",
@@ -2269,7 +2274,7 @@
     "loadingQuotas": "Indlæser...",
     "account": "Konto",
     "modelQuotas": "Modelkvoter",
-    "lastUsed": "Sidst brugt",
+    "lastUsed": "Last Refreshed",
     "actions": "Handlinger",
     "refreshQuota": "Opdater kvote",
     "today": "I dag",
@@ -2419,7 +2424,7 @@
     "waitingForGoogleAuthorization": "Venter på Google-godkendelse...",
     "waitingForOpenAIAuthorization": "Venter på OpenAI-godkendelse...",
     "waitingForAntigravityAuthorization": "Venter på antigravity-autorisation...",
-    "waitingForIFlowAuthorization": "Venter på iFlow-godkendelse...",
+    "waitingForQoderAuthorization": "Venter på Qoder-godkendelse...",
     "exchangingCodeForTokens": "Udveksler kode til tokens..."
   },
   "landing": {

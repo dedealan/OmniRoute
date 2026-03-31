@@ -36,7 +36,7 @@
     "time": "Время",
     "details": "Подробности",
     "created": "Создано",
-    "lastUsed": "Последнее использование",
+    "lastUsed": "Last Refreshed",
     "loadMore": "Загрузить больше",
     "noResults": "Результаты не найдены",
     "reloadPage": "Обновить страницу",
@@ -270,7 +270,11 @@
     "overviewDescription": "Отслеживайте шаблоны использования API, потребление токенов, затраты и тенденции активности среди всех поставщиков и моделей.",
     "evalsDescription": "Запустите оценочные пакеты для тестирования и проверки конечных точек LLM. Сравнивайте качество модели, обнаруживайте регрессии и измеряйте задержку тестирования.",
     "overview": "Обзор",
-    "evals": "Оценки"
+    "evals": "Оценки",
+    "utilization": "Использование",
+    "utilizationDescription": "Тенденции использования квоты поставщика и отслеживание ограничений скорости",
+    "comboHealth": "Здоровье комбо",
+    "comboHealthDescription": "Квота на уровне комбо, распределение использования и метрики производительности"
   },
   "apiManager": {
     "title": "API-ключи",
@@ -892,7 +896,7 @@
       }
     },
     "templateFreeStack": "Free Stack ($0)",
-    "templateFreeStackDesc": "Round-robin across all free providers: Kiro (Claude), iFlow (5 models), Qwen (4 models), Gemini CLI. Zero cost, never stops coding."
+    "templateFreeStackDesc": "Round-robin across all free providers: Kiro (Claude), Qoder (5 models), Qwen (4 models), Gemini CLI. Zero cost, never stops coding."
   },
   "costs": {
     "title": "Затраты",
@@ -1011,7 +1015,8 @@
     "webSearch": "Web Search",
     "webSearchDesc": "Unified web search across multiple providers with automatic failover and caching",
     "searchProvider": "Search Provider",
-    "searchProviderDesc": "This provider is used for web search via POST /v1/search. No model configuration needed — search providers are ready to use once an API key is connected."
+    "searchProviderDesc": "This provider is used for web search via POST /v1/search. No model configuration needed — search providers are ready to use once an API key is connected.",
+    "cloudflaredUrlNotice": "Creates a temporary Cloudflare Quick Tunnel. The URL changes after every restart."
   },
   "mcpDashboard": {
     "loading": "Loading MCP dashboard...",
@@ -2269,7 +2274,7 @@
     "loadingQuotas": "Загрузка...",
     "account": "Аккаунт",
     "modelQuotas": "Модельные квоты",
-    "lastUsed": "Последнее использование",
+    "lastUsed": "Last Refreshed",
     "actions": "Действия",
     "refreshQuota": "Обновить квоту",
     "today": "Сегодня",
@@ -2417,7 +2422,7 @@
     "waitingForGoogleAuthorization": "Waiting for Google authorization...",
     "waitingForOpenAIAuthorization": "Waiting for OpenAI authorization...",
     "waitingForAntigravityAuthorization": "Waiting for Antigravity authorization...",
-    "waitingForIFlowAuthorization": "Waiting for iFlow authorization...",
+    "waitingForQoderAuthorization": "Waiting for Qoder authorization...",
     "exchangingCodeForTokens": "Exchanging code for tokens...",
     "Authorization": "Авторизация",
     "Content-Disposition": "Содержание-Расположение"

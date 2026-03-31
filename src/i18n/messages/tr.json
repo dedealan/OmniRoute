@@ -36,7 +36,7 @@
     "time": "Zaman",
     "details": "Ayrıntılar",
     "created": "Oluşturuldu",
-    "lastUsed": "Son Kullanılan",
+    "lastUsed": "Last Refreshed",
     "loadMore": "Daha Fazla Yükle",
     "noResults": "Sonuç bulunamadı",
     "reloadPage": "Sayfayı Yeniden Yükle",
@@ -268,7 +268,11 @@
     "overviewDescription": "Tüm sağlayıcılar ve modeller genelinde API kullanım kalıplarınızı, jeton tüketiminizi, maliyetlerinizi ve etkinlik eğilimlerinizi izleyin.",
     "evalsDescription": "LLM uç noktalarınızı test etmek ve doğrulamak için değerlendirme paketlerini çalıştırın. Model kalitesini karşılaştırın, regresyonları tespit edin ve gecikmeyi kıyaslayın.",
     "overview": "Genel Bakış",
-    "evals": "Değerlendirmeler"
+    "evals": "Değerlendirmeler",
+    "utilization": "Kullanım",
+    "utilizationDescription": "Sağlayıcı kota kullanım trendleri ve hız limiti takibi",
+    "comboHealth": "Kombo Sağlığı",
+    "comboHealthDescription": "Kombo düzeyinde kota, kullanım dağılımı ve performans metrikleri"
   },
   "apiManager": {
     "title": "API Anahtarları",
@@ -941,7 +945,7 @@
       }
     },
     "templateFreeStack": "Ücretsiz Yığın ($0)",
-    "templateFreeStackDesc": "Tüm ücretsiz sağlayıcılarda round-robin: Kiro (Claude), iFlow (5 model), Qwen (4 model), Gemini CLI. Sıfır maliyet, kodlama kesintisiz."
+    "templateFreeStackDesc": "Tüm ücretsiz sağlayıcılarda round-robin: Kiro (Claude), Qoder (5 model), Qwen (4 model), Gemini CLI. Sıfır maliyet, kodlama kesintisiz."
   },
   "costs": {
     "title": "Maliyetler",
@@ -1060,7 +1064,8 @@
     "a2aQuickStartStep2": "JSON-RPC isteklerini `message/send` veya `message/stream` kullanarak `POST /a2a` adresine gönderin.",
     "a2aQuickStartStep3": "Görevleri `tasks/get` ve `tasks/cancel` ile izleyin ve yönetin.",
     "completionsLegacy": "Tamamlamalar (Eski)",
-    "completionsLegacyDesc": "Eski OpenAI metin tamamlamaları — hem bilgi istemi dizesini hem de mesaj dizisi biçimini kabul eder"
+    "completionsLegacyDesc": "Eski OpenAI metin tamamlamaları — hem bilgi istemi dizesini hem de mesaj dizisi biçimini kabul eder",
+    "cloudflaredUrlNotice": "Creates a temporary Cloudflare Quick Tunnel. The URL changes after every restart."
   },
   "endpoints": {
     "tabProxy": "Uç Nokta Proxy",
@@ -2330,7 +2335,7 @@
     "loadingQuotas": "Yükleniyor...",
     "account": "Hesap",
     "modelQuotas": "Model Kotaları",
-    "lastUsed": "Son Kullanılan",
+    "lastUsed": "Last Refreshed",
     "actions": "Eylemler",
     "refreshQuota": "Kotayı yenile",
     "today": "Bugün",
@@ -2480,7 +2485,7 @@
     "waitingForGoogleAuthorization": "Google yetkilendirmesi bekleniyor...",
     "waitingForOpenAIAuthorization": "OpenAI yetkilendirmesi bekleniyor...",
     "waitingForAntigravityAuthorization": "Antigravity yetkilendirmesi bekleniyor...",
-    "waitingForIFlowAuthorization": "iFlow yetkilendirmesi bekleniyor...",
+    "waitingForQoderAuthorization": "Qoder yetkilendirmesi bekleniyor...",
     "exchangingCodeForTokens": "Kod jetonlarla değiştiriliyor..."
   },
   "landing": {

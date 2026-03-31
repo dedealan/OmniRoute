@@ -36,7 +36,7 @@
     "time": "thời gian",
     "details": "Chi tiết",
     "created": "Đã tạo",
-    "lastUsed": "Được sử dụng lần cuối",
+    "lastUsed": "Last Refreshed",
     "loadMore": "Tải thêm",
     "noResults": "Không tìm thấy kết quả nào",
     "reloadPage": "Tải lại trang",
@@ -270,7 +270,11 @@
     "overviewDescription": "Giám sát mô hình sử dụng API, mức tiêu thụ mã thông báo, chi phí và xu hướng hoạt động của bạn trên tất cả các nhà cung cấp và mô hình.",
     "evalsDescription": "Chạy bộ đánh giá để kiểm tra và xác thực điểm cuối LLM của bạn. So sánh chất lượng mô hình, phát hiện hồi quy và độ trễ điểm chuẩn.",
     "overview": "Tổng quan",
-    "evals": "Đánh giá"
+    "evals": "Đánh giá",
+    "utilization": "Tỷ lệ sử dụng",
+    "utilizationDescription": "Xu hướng sử dụng hạn ngạch nhà cung cấp và theo dõi giới hạn tốc độ",
+    "comboHealth": "Sức khỏe Combo",
+    "comboHealthDescription": "Hạn ngạch cấp combo, phân phối sử dụng và số liệu hiệu suất"
   },
   "apiManager": {
     "title": "Khóa API",
@@ -892,7 +896,7 @@
       }
     },
     "templateFreeStack": "Free Stack ($0)",
-    "templateFreeStackDesc": "Round-robin across all free providers: Kiro (Claude), iFlow (5 models), Qwen (4 models), Gemini CLI. Zero cost, never stops coding."
+    "templateFreeStackDesc": "Round-robin across all free providers: Kiro (Claude), Qoder (5 models), Qwen (4 models), Gemini CLI. Zero cost, never stops coding."
   },
   "costs": {
     "title": "Chi phí",
@@ -1011,7 +1015,8 @@
     "webSearch": "Web Search",
     "webSearchDesc": "Unified web search across multiple providers with automatic failover and caching",
     "searchProvider": "Search Provider",
-    "searchProviderDesc": "This provider is used for web search via POST /v1/search. No model configuration needed — search providers are ready to use once an API key is connected."
+    "searchProviderDesc": "This provider is used for web search via POST /v1/search. No model configuration needed — search providers are ready to use once an API key is connected.",
+    "cloudflaredUrlNotice": "Creates a temporary Cloudflare Quick Tunnel. The URL changes after every restart."
   },
   "mcpDashboard": {
     "loading": "Loading MCP dashboard...",
@@ -2269,7 +2274,7 @@
     "loadingQuotas": "Đang tải...",
     "account": "Tài khoản",
     "modelQuotas": "Hạn ngạch mẫu",
-    "lastUsed": "Được sử dụng lần cuối",
+    "lastUsed": "Last Refreshed",
     "actions": "hành động",
     "refreshQuota": "Làm mới hạn ngạch",
     "today": "hôm nay",
@@ -2419,7 +2424,7 @@
     "waitingForGoogleAuthorization": "Đang chờ Google ủy quyền...",
     "waitingForOpenAIAuthorization": "Đang chờ ủy quyền OpenAI...",
     "waitingForAntigravityAuthorization": "Đang chờ ủy quyền chống hấp dẫn...",
-    "waitingForIFlowAuthorization": "Đang chờ ủy quyền iFlow...",
+    "waitingForQoderAuthorization": "Đang chờ ủy quyền Qoder...",
     "exchangingCodeForTokens": "Đổi mã lấy token..."
   },
   "landing": {

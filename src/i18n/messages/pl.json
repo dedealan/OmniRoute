@@ -36,7 +36,7 @@
     "time": "Czas",
     "details": "Szczegóły",
     "created": "Utworzono",
-    "lastUsed": "Ostatnio używany",
+    "lastUsed": "Last Refreshed",
     "loadMore": "Załaduj więcej",
     "noResults": "Nie znaleziono żadnych wyników",
     "reloadPage": "Załaduj ponownie stronę",
@@ -270,7 +270,11 @@
     "overviewDescription": "Monitoruj wzorce wykorzystania interfejsu API, zużycie tokenów, koszty i trendy aktywności u wszystkich dostawców i modeli.",
     "evalsDescription": "Uruchom pakiety ewaluacyjne, aby przetestować i zweryfikować punkty końcowe LLM. Porównaj jakość modelu, wykryj regresje i porównaj opóźnienia.",
     "overview": "Przegląd",
-    "evals": "Ewaluacje"
+    "evals": "Ewaluacje",
+    "utilization": "Wykorzystanie",
+    "utilizationDescription": "Trendy wykorzystania kwoty dostawcy i śledzenie limitów szybkości",
+    "comboHealth": "Zdrowie Kombinacji",
+    "comboHealthDescription": "Kwota na poziomie kombinacji, dystrybucja użycia i metryki wydajności"
   },
   "apiManager": {
     "title": "Klucze API",
@@ -892,7 +896,7 @@
       }
     },
     "templateFreeStack": "Free Stack ($0)",
-    "templateFreeStackDesc": "Round-robin across all free providers: Kiro (Claude), iFlow (5 models), Qwen (4 models), Gemini CLI. Zero cost, never stops coding."
+    "templateFreeStackDesc": "Round-robin across all free providers: Kiro (Claude), Qoder (5 models), Qwen (4 models), Gemini CLI. Zero cost, never stops coding."
   },
   "costs": {
     "title": "Koszty",
@@ -1011,7 +1015,8 @@
     "webSearch": "Web Search",
     "webSearchDesc": "Unified web search across multiple providers with automatic failover and caching",
     "searchProvider": "Search Provider",
-    "searchProviderDesc": "This provider is used for web search via POST /v1/search. No model configuration needed — search providers are ready to use once an API key is connected."
+    "searchProviderDesc": "This provider is used for web search via POST /v1/search. No model configuration needed — search providers are ready to use once an API key is connected.",
+    "cloudflaredUrlNotice": "Creates a temporary Cloudflare Quick Tunnel. The URL changes after every restart."
   },
   "mcpDashboard": {
     "loading": "Loading MCP dashboard...",
@@ -2269,7 +2274,7 @@
     "loadingQuotas": "Ładowanie...",
     "account": "Konto",
     "modelQuotas": "Kwoty modelowe",
-    "lastUsed": "Ostatnio używany",
+    "lastUsed": "Last Refreshed",
     "actions": "Działania",
     "refreshQuota": "Odśwież limit",
     "today": "Dzisiaj",
@@ -2417,7 +2422,7 @@
     "waitingForGoogleAuthorization": "Waiting for Google authorization...",
     "waitingForOpenAIAuthorization": "Waiting for OpenAI authorization...",
     "waitingForAntigravityAuthorization": "Waiting for Antigravity authorization...",
-    "waitingForIFlowAuthorization": "Waiting for iFlow authorization...",
+    "waitingForQoderAuthorization": "Waiting for Qoder authorization...",
     "exchangingCodeForTokens": "Exchanging code for tokens...",
     "Authorization": "Autoryzacja",
     "Content-Disposition": "Dyspozycja treści"

@@ -36,7 +36,7 @@
     "time": "Tijd",
     "details": "Details",
     "created": "Gemaakt",
-    "lastUsed": "Laatst gebruikt",
+    "lastUsed": "Last Refreshed",
     "loadMore": "Laad meer",
     "noResults": "Geen resultaten gevonden",
     "reloadPage": "Pagina opnieuw laden",
@@ -270,7 +270,11 @@
     "overviewDescription": "Houd toezicht op uw API-gebruikspatronen, tokenverbruik, kosten en activiteitstrends voor alle providers en modellen.",
     "evalsDescription": "Voer evaluatiesuites uit om uw LLM-eindpunten te testen en te valideren. Vergelijk de modelkwaliteit, detecteer regressies en benchmark de latentie.",
     "overview": "Overzicht",
-    "evals": "Evals"
+    "evals": "Evals",
+    "utilization": "Benutting",
+    "utilizationDescription": "Trends in quotagebruik van de provider en bijhouden van snelheidslimieten",
+    "comboHealth": "Combo-gezondheid",
+    "comboHealthDescription": "Quota op combo-niveau, gebruiksdistributie en prestatiegegevens"
   },
   "apiManager": {
     "title": "API-sleutels",
@@ -892,7 +896,7 @@
       }
     },
     "templateFreeStack": "Free Stack ($0)",
-    "templateFreeStackDesc": "Round-robin across all free providers: Kiro (Claude), iFlow (5 models), Qwen (4 models), Gemini CLI. Zero cost, never stops coding."
+    "templateFreeStackDesc": "Round-robin across all free providers: Kiro (Claude), Qoder (5 models), Qwen (4 models), Gemini CLI. Zero cost, never stops coding."
   },
   "costs": {
     "title": "Kosten",
@@ -1011,7 +1015,8 @@
     "webSearch": "Web Search",
     "webSearchDesc": "Unified web search across multiple providers with automatic failover and caching",
     "searchProvider": "Search Provider",
-    "searchProviderDesc": "This provider is used for web search via POST /v1/search. No model configuration needed — search providers are ready to use once an API key is connected."
+    "searchProviderDesc": "This provider is used for web search via POST /v1/search. No model configuration needed — search providers are ready to use once an API key is connected.",
+    "cloudflaredUrlNotice": "Creates a temporary Cloudflare Quick Tunnel. The URL changes after every restart."
   },
   "mcpDashboard": {
     "loading": "Loading MCP dashboard...",
@@ -2269,7 +2274,7 @@
     "loadingQuotas": "Laden...",
     "account": "Rekening",
     "modelQuotas": "Modelquota",
-    "lastUsed": "Laatst gebruikt",
+    "lastUsed": "Last Refreshed",
     "actions": "Acties",
     "refreshQuota": "Quota vernieuwen",
     "today": "Vandaag",
@@ -2419,7 +2424,7 @@
     "waitingForGoogleAuthorization": "Wachten op Google-autorisatie...",
     "waitingForOpenAIAuthorization": "Wachten op OpenAI-autorisatie...",
     "waitingForAntigravityAuthorization": "Wachten op toestemming voor anti-zwaartekracht...",
-    "waitingForIFlowAuthorization": "Wachten op iFlow-autorisatie...",
+    "waitingForQoderAuthorization": "Wachten op Qoder-autorisatie...",
     "exchangingCodeForTokens": "Code uitwisselen voor tokens..."
   },
   "landing": {

@@ -36,7 +36,7 @@
     "time": "זמן",
     "details": "פרטים",
     "created": "נוצר",
-    "lastUsed": "בשימוש אחרון",
+    "lastUsed": "Last Refreshed",
     "loadMore": "טען עוד",
     "noResults": "לא נמצאו תוצאות",
     "reloadPage": "טען מחדש את הדף",
@@ -270,7 +270,11 @@
     "overviewDescription": "עקוב אחר דפוסי השימוש שלך ב-API, צריכת אסימונים, עלויות ומגמות פעילות בכל הספקים והדגמים.",
     "evalsDescription": "הפעל חבילות הערכה כדי לבדוק ולאמת את נקודות הקצה שלך ב-LLM. השווה את איכות המודל, זיהוי רגרסיות והשהייה בהשוואה.",
     "overview": "סקירה כללית",
-    "evals": "Evals"
+    "evals": "Evals",
+    "utilization": "ניצול",
+    "utilizationDescription": "מגמות שימוש במכסת הספק ומעקב אחר מגבלות קצב",
+    "comboHealth": "בריאות הקומבו",
+    "comboHealthDescription": "מכסה ברמת הקומבו, הפצת שימוש ומדדי ביצוע"
   },
   "apiManager": {
     "title": "מפתחות API",
@@ -892,7 +896,7 @@
       }
     },
     "templateFreeStack": "Free Stack ($0)",
-    "templateFreeStackDesc": "Round-robin across all free providers: Kiro (Claude), iFlow (5 models), Qwen (4 models), Gemini CLI. Zero cost, never stops coding."
+    "templateFreeStackDesc": "Round-robin across all free providers: Kiro (Claude), Qoder (5 models), Qwen (4 models), Gemini CLI. Zero cost, never stops coding."
   },
   "costs": {
     "title": "עלויות",
@@ -1011,7 +1015,8 @@
     "webSearch": "Web Search",
     "webSearchDesc": "Unified web search across multiple providers with automatic failover and caching",
     "searchProvider": "Search Provider",
-    "searchProviderDesc": "This provider is used for web search via POST /v1/search. No model configuration needed — search providers are ready to use once an API key is connected."
+    "searchProviderDesc": "This provider is used for web search via POST /v1/search. No model configuration needed — search providers are ready to use once an API key is connected.",
+    "cloudflaredUrlNotice": "Creates a temporary Cloudflare Quick Tunnel. The URL changes after every restart."
   },
   "mcpDashboard": {
     "loading": "Loading MCP dashboard...",
@@ -2269,7 +2274,7 @@
     "loadingQuotas": "טוען...",
     "account": "חשבון",
     "modelQuotas": "מכסות דגם",
-    "lastUsed": "בשימוש אחרון",
+    "lastUsed": "Last Refreshed",
     "actions": "פעולות",
     "refreshQuota": "רענון מכסה",
     "today": "היום",
@@ -2419,7 +2424,7 @@
     "waitingForGoogleAuthorization": "ממתין לאישור Google...",
     "waitingForOpenAIAuthorization": "ממתין להרשאת OpenAI...",
     "waitingForAntigravityAuthorization": "ממתין לאישור נגד כבידה...",
-    "waitingForIFlowAuthorization": "ממתין להרשאת iFlow...",
+    "waitingForQoderAuthorization": "ממתין להרשאת Qoder...",
     "exchangingCodeForTokens": "מחליף קוד לאסימונים..."
   },
   "landing": {

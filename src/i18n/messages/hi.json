@@ -36,7 +36,7 @@
     "time": "समय",
     "details": "विवरण",
     "created": "बनाया गया",
-    "lastUsed": "अंतिम बार उपयोग किया गया",
+    "lastUsed": "Last Refreshed",
     "loadMore": "अधिक लोड करें",
     "noResults": "कोई परिणाम नहीं मिला",
     "reloadPage": "पृष्ठ पुनः लोड करें",
@@ -188,7 +188,11 @@
     "overviewDescription": "सभी प्रदाताओं और मॉडलों में अपने एपीआई उपयोग पैटर्न, टोकन खपत, लागत और गतिविधि रुझान की निगरानी करें।",
     "evalsDescription": "अपने एलएलएम समापन बिंदुओं का परीक्षण और सत्यापन करने के लिए मूल्यांकन सुइट चलाएँ। मॉडल गुणवत्ता की तुलना करें, प्रतिगमन और बेंचमार्क विलंबता का पता लगाएं।",
     "overview": "सिंहावलोकन",
-    "evals": "एवल्स"
+    "evals": "एवल्स",
+    "utilization": "उपयोग",
+    "utilizationDescription": "प्रदाता कोटा उपयोग रुझान और दर सीमा ट्रैकिंग",
+    "comboHealth": "कॉम्बो स्वास्थ्य",
+    "comboHealthDescription": "कॉम्बो-स्तरीय कोटा, उपयोग वितरण और प्रदर्शन मेट्रिक्स"
   },
   "apiManager": {
     "title": "एपीआई कुंजी",
@@ -800,7 +804,7 @@
       }
     },
     "templateFreeStack": "Free Stack ($0)",
-    "templateFreeStackDesc": "Round-robin across all free providers: Kiro (Claude), iFlow (5 models), Qwen (4 models), Gemini CLI. Zero cost, never stops coding."
+    "templateFreeStackDesc": "Round-robin across all free providers: Kiro (Claude), Qoder (5 models), Qwen (4 models), Gemini CLI. Zero cost, never stops coding."
   },
   "costs": {
     "title": "लागत",
@@ -919,7 +923,8 @@
     "webSearch": "Web Search",
     "webSearchDesc": "Unified web search across multiple providers with automatic failover and caching",
     "searchProvider": "Search Provider",
-    "searchProviderDesc": "This provider is used for web search via POST /v1/search. No model configuration needed — search providers are ready to use once an API key is connected."
+    "searchProviderDesc": "This provider is used for web search via POST /v1/search. No model configuration needed — search providers are ready to use once an API key is connected.",
+    "cloudflaredUrlNotice": "Creates a temporary Cloudflare Quick Tunnel. The URL changes after every restart."
   },
   "mcpDashboard": {
     "loading": "Loading MCP dashboard...",
@@ -2168,7 +2173,7 @@
     "loadingQuotas": "लोड हो रहा है...",
     "account": "खाता",
     "modelQuotas": "मॉडल कोटा",
-    "lastUsed": "अंतिम बार उपयोग किया गया",
+    "lastUsed": "Last Refreshed",
     "actions": "क्रियाएँ",
     "refreshQuota": "ताज़ा कोटा",
     "today": "आज",

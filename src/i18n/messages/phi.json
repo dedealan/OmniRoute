@@ -36,7 +36,7 @@
     "time": "Oras",
     "details": "Mga Detalye",
     "created": "Nilikha",
-    "lastUsed": "Huling Ginamit",
+    "lastUsed": "Last Refreshed",
     "loadMore": "Mag-load ng Higit Pa",
     "noResults": "Walang nakitang resulta",
     "reloadPage": "I-reload ang Pahina",
@@ -270,7 +270,11 @@
     "overviewDescription": "Subaybayan ang iyong mga pattern ng paggamit ng API, pagkonsumo ng token, gastos, at mga trend ng aktibidad sa lahat ng provider at modelo.",
     "evalsDescription": "Magpatakbo ng mga evaluation suite para subukan at patunayan ang iyong mga LLM endpoint. Ihambing ang kalidad ng modelo, tuklasin ang mga regression, at benchmark na latency.",
     "overview": "Pangkalahatang-ideya",
-    "evals": "Evals"
+    "evals": "Evals",
+    "utilization": "Paggamit",
+    "utilizationDescription": "Mga trend sa paggamit ng quota ng provider at pagsubaybay sa rate limit",
+    "comboHealth": "Kalusugan ng Combo",
+    "comboHealthDescription": "Quota sa antas ng combo, pamamahagi ng paggamit, at mga metrics ng pagganap"
   },
   "apiManager": {
     "title": "Mga API Key",
@@ -892,7 +896,7 @@
       }
     },
     "templateFreeStack": "Free Stack ($0)",
-    "templateFreeStackDesc": "Round-robin across all free providers: Kiro (Claude), iFlow (5 models), Qwen (4 models), Gemini CLI. Zero cost, never stops coding."
+    "templateFreeStackDesc": "Round-robin across all free providers: Kiro (Claude), Qoder (5 models), Qwen (4 models), Gemini CLI. Zero cost, never stops coding."
   },
   "costs": {
     "title": "Mga gastos",
@@ -1011,7 +1015,8 @@
     "webSearch": "Web Search",
     "webSearchDesc": "Unified web search across multiple providers with automatic failover and caching",
     "searchProvider": "Search Provider",
-    "searchProviderDesc": "This provider is used for web search via POST /v1/search. No model configuration needed — search providers are ready to use once an API key is connected."
+    "searchProviderDesc": "This provider is used for web search via POST /v1/search. No model configuration needed — search providers are ready to use once an API key is connected.",
+    "cloudflaredUrlNotice": "Creates a temporary Cloudflare Quick Tunnel. The URL changes after every restart."
   },
   "mcpDashboard": {
     "loading": "Nilo-load ang MCP dashboard...",
@@ -2269,7 +2274,7 @@
     "loadingQuotas": "Naglo-load...",
     "account": "Account",
     "modelQuotas": "Mga Modelong Quota",
-    "lastUsed": "Huling Ginamit",
+    "lastUsed": "Last Refreshed",
     "actions": "Mga aksyon",
     "refreshQuota": "I-refresh ang quota",
     "today": "Ngayong araw",
@@ -2419,7 +2424,7 @@
     "waitingForGoogleAuthorization": "Naghihintay ng pahintulot ng Google...",
     "waitingForOpenAIAuthorization": "Naghihintay ng awtorisasyon sa OpenAI...",
     "waitingForAntigravityAuthorization": "Naghihintay ng awtorisasyon sa Antigravity...",
-    "waitingForIFlowAuthorization": "Naghihintay ng awtorisasyon ng iFlow...",
+    "waitingForQoderAuthorization": "Naghihintay ng awtorisasyon ng Qoder...",
     "exchangingCodeForTokens": "Pagpapalit ng code para sa mga token..."
   },
   "landing": {

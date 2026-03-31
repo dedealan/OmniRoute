@@ -36,7 +36,7 @@
     "time": "Idő",
     "details": "Részletek",
     "created": "Létrehozva",
-    "lastUsed": "Utoljára használt",
+    "lastUsed": "Last Refreshed",
     "loadMore": "Load More",
     "noResults": "Nincs találat",
     "reloadPage": "Oldal újratöltése",
@@ -270,7 +270,11 @@
     "overviewDescription": "Kövesse nyomon API-használati mintáit, tokenfelhasználását, költségeit és tevékenységi trendjeit az összes szolgáltatónál és modellnél.",
     "evalsDescription": "Futtasson kiértékelő csomagokat az LLM-végpontok teszteléséhez és érvényesítéséhez. Hasonlítsa össze a modell minőségét, észlelje a regressziókat és mérje fel a késleltetést.",
     "overview": "Áttekintés",
-    "evals": "Evals"
+    "evals": "Evals",
+    "utilization": "Kihasználtság",
+    "utilizationDescription": "Szolgáltatói kvótahasználati trendek és sebességkorlát-követés",
+    "comboHealth": "Kombo egészsége",
+    "comboHealthDescription": "Kombó szintű kvóta, használateloszlás és teljesítménymutatók"
   },
   "apiManager": {
     "title": "API kulcsok",
@@ -892,7 +896,7 @@
       }
     },
     "templateFreeStack": "Free Stack ($0)",
-    "templateFreeStackDesc": "Round-robin across all free providers: Kiro (Claude), iFlow (5 models), Qwen (4 models), Gemini CLI. Zero cost, never stops coding."
+    "templateFreeStackDesc": "Round-robin across all free providers: Kiro (Claude), Qoder (5 models), Qwen (4 models), Gemini CLI. Zero cost, never stops coding."
   },
   "costs": {
     "title": "Költségek",
@@ -1011,7 +1015,8 @@
     "webSearch": "Web Search",
     "webSearchDesc": "Unified web search across multiple providers with automatic failover and caching",
     "searchProvider": "Search Provider",
-    "searchProviderDesc": "This provider is used for web search via POST /v1/search. No model configuration needed — search providers are ready to use once an API key is connected."
+    "searchProviderDesc": "This provider is used for web search via POST /v1/search. No model configuration needed — search providers are ready to use once an API key is connected.",
+    "cloudflaredUrlNotice": "Creates a temporary Cloudflare Quick Tunnel. The URL changes after every restart."
   },
   "mcpDashboard": {
     "loading": "Loading MCP dashboard...",
@@ -2269,7 +2274,7 @@
     "loadingQuotas": "Betöltés...",
     "account": "fiók",
     "modelQuotas": "Modellkvóták",
-    "lastUsed": "Utoljára használt",
+    "lastUsed": "Last Refreshed",
     "actions": "Akciók",
     "refreshQuota": "Kvóta frissítése",
     "today": "Ma",
@@ -2419,7 +2424,7 @@
     "waitingForGoogleAuthorization": "Várakozás a Google engedélyére...",
     "waitingForOpenAIAuthorization": "Várakozás az OpenAI engedélyezésére...",
     "waitingForAntigravityAuthorization": "Várakozás az Antigravitációs engedélyezésre...",
-    "waitingForIFlowAuthorization": "Várakozás az iFlow engedélyezésére...",
+    "waitingForQoderAuthorization": "Várakozás az Qoder engedélyezésére...",
     "exchangingCodeForTokens": "Kód cseréje tokenre..."
   },
   "landing": {
