@@ -264,6 +264,7 @@ export const REGISTRY: Record<string, RegistryEntry> = {
     },
     models: [
       { id: "gpt-5.4", name: "GPT 5.4" },
+      { id: "gpt-5.4-mini", name: "GPT 5.4 Mini" },
       { id: "gpt-5.3-codex", name: "GPT 5.3 Codex" },
       { id: "gpt-5.3-codex-xhigh", name: "GPT 5.3 Codex (xHigh)" },
       { id: "gpt-5.3-codex-high", name: "GPT 5.3 Codex (High)" },
@@ -286,7 +287,7 @@ export const REGISTRY: Record<string, RegistryEntry> = {
     alias: "qw",
     format: "openai",
     executor: "default",
-    baseUrl: "https://dashscope-intl.aliyuncs.com/compatible-mode/v1/chat/completions",
+    baseUrl: "https://chat.qwen.ai/api/v1/services/aigc/text-generation/generation",
     authType: "oauth",
     authHeader: "bearer",
     headers: {
@@ -590,9 +591,13 @@ export const REGISTRY: Record<string, RegistryEntry> = {
     authPrefix: "Bearer",
     defaultContextLength: 200000,
     models: [
-      { id: "minimax-m2.5-free", name: "MiniMax M2.5 Free" },
-      { id: "big-pickle", name: "Big Pickle" },
-      { id: "gpt-5-nano", name: "GPT 5 Nano" },
+      { id: "minimax-m2.5-free", name: "MiniMax M2.5 Free", contextLength: 204800 },
+      { id: "big-pickle", name: "Big Pickle", contextLength: 200000 },
+      { id: "gpt-5-nano", name: "GPT 5 Nano", contextLength: 400000 },
+      { id: "mimo-v2-omni-free", name: "MiMo V2 Omni Free", contextLength: 262144 },
+      { id: "mimo-v2-pro-free", name: "MiMo V2 Pro Free", contextLength: 1048576 },
+      { id: "nemotron-3-super-free", name: "Nemotron 3 Super Free", contextLength: 1000000 },
+      { id: "qwen3.6-plus-free", name: "Qwen 3.6 Plus Free", contextLength: 1048576 },
     ],
   },
 
