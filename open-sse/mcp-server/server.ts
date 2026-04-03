@@ -212,6 +212,12 @@ async function handleGetHealth() {
               hitRate: toNumber(cacheStatsRaw.hitRate, 0),
             }
           : undefined,
+      cryptography: health.cryptography
+        ? {
+            status: toString(toRecord(health.cryptography).status, "missing_or_invalid"),
+            provider: toString(toRecord(health.cryptography).provider, "unknown"),
+          }
+        : undefined,
     };
 
     await logToolCall("omniroute_get_health", {}, result, Date.now() - start, true);
@@ -725,12 +731,14 @@ export function createMcpServer(): McpServer {
       toolDef.name,
       {
         description: toolDef.description,
-        inputSchema: toolDef.inputSchema as any,
+        // @ts-ignore: dynamic zod access
+        inputSchema: toolDef.inputSchema,
       },
       withScopeEnforcement(toolDef.name, async (args) => {
         try {
           const parsedArgs = toolDef.inputSchema.parse(args ?? {});
-          const result = await toolDef.handler(parsedArgs as any);
+          // @ts-ignore: handler expected specific object
+          const result = await toolDef.handler(parsedArgs);
           return { content: [{ type: "text" as const, text: JSON.stringify(result, null, 2) }] };
         } catch (err) {
           const msg = err instanceof Error ? err.message : String(err);
@@ -746,12 +754,14 @@ export function createMcpServer(): McpServer {
       toolDef.name,
       {
         description: toolDef.description,
-        inputSchema: toolDef.inputSchema as any,
+        // @ts-ignore: dynamic zod access
+        inputSchema: toolDef.inputSchema,
       },
       withScopeEnforcement(toolDef.name, async (args) => {
         try {
           const parsedArgs = toolDef.inputSchema.parse(args ?? {});
-          const result = await toolDef.handler(parsedArgs as any);
+          // @ts-ignore: handler expected specific object
+          const result = await toolDef.handler(parsedArgs);
           return { content: [{ type: "text" as const, text: JSON.stringify(result, null, 2) }] };
         } catch (err) {
           const msg = err instanceof Error ? err.message : String(err);

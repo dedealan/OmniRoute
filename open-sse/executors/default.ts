@@ -5,7 +5,7 @@ import { getRotatingApiKey } from "../services/apiKeyRotator.ts";
 import {
   buildClaudeCodeCompatibleHeaders,
   CLAUDE_CODE_COMPATIBLE_DEFAULT_CHAT_PATH,
-  joinBaseUrlAndPath,
+  joinClaudeCodeCompatibleUrl,
 } from "../services/claudeCodeCompatible.ts";
 import { isClaudeCodeCompatible } from "../services/provider.ts";
 
@@ -32,7 +32,10 @@ export class DefaultExecutor extends BaseExecutor {
       const baseUrl = psd?.baseUrl || "https://api.anthropic.com/v1";
       const customPath = typeof psd?.chatPath === "string" && psd.chatPath ? psd.chatPath : null;
       if (isClaudeCodeCompatible(this.provider)) {
-        return joinBaseUrlAndPath(baseUrl, customPath || CLAUDE_CODE_COMPATIBLE_DEFAULT_CHAT_PATH);
+        return joinClaudeCodeCompatibleUrl(
+          baseUrl,
+          customPath || CLAUDE_CODE_COMPATIBLE_DEFAULT_CHAT_PATH
+        );
       }
       const normalized = baseUrl.replace(/\/$/, "");
       return `${normalized}${customPath || "/messages"}`;
@@ -46,6 +49,10 @@ export class DefaultExecutor extends BaseExecutor {
         return `${this.config.baseUrl}?beta=true`;
       case "gemini":
         return `${this.config.baseUrl}/${model}:${stream ? "streamGenerateContent?alt=sse" : "generateContent"}`;
+      case "qwen": {
+        const resourceUrl = credentials?.providerSpecificData?.resourceUrl;
+        return `https://${resourceUrl || "portal.qwen.ai"}/v1/chat/completions`;
+      }
       default:
         return this.config.baseUrl;
     }

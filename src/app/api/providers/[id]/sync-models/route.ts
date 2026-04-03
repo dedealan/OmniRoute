@@ -1,6 +1,10 @@
 import { NextResponse } from "next/server";
 import { getProviderConnectionById } from "@/models";
-import { getCustomModels, replaceCustomModels } from "@/lib/db/models";
+import {
+  getCustomModels,
+  replaceCustomModels,
+  replaceSyncedAvailableModelsForConnection,
+} from "@/lib/db/models";
 import {
   syncManagedAvailableModelAliases,
   usesManagedAvailableModels,
@@ -123,6 +127,8 @@ function getModelSyncChannelLabel(connection: unknown) {
 export async function POST(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const start = Date.now();
   const { id } = await params;
+  let logProvider = "unknown";
+  let channelLabel: string | null = null;
 
   try {
     if (!(await isAuthenticated(request)) && !isModelSyncInternalRequest(request)) {
@@ -137,11 +143,12 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       return NextResponse.json({ error: "Connection not found" }, { status: 404 });
     }
 
-    const providerLabel = getModelSyncChannelLabel(connection);
+    logProvider = toNonEmptyString(connection.provider) || "unknown";
+    channelLabel = getModelSyncChannelLabel(connection);
 
     // Fetch models from the existing /api/providers/[id]/models endpoint
     const origin = new URL(request.url).origin;
-    const modelsUrl = `${origin}/api/providers/${id}/models`;
+    const modelsUrl = `${origin}/api/providers/${encodeURIComponent(id)}/models`;
     const modelsRes = await fetch(modelsUrl, {
       method: "GET",
       headers: {
@@ -160,7 +167,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
         path: `/api/providers/${id}/models`,
         status: modelsRes.status,
         model: "model-sync",
-        provider: providerLabel,
+        provider: logProvider,
         sourceFormat: "-",
         connectionId: id,
         duration,
@@ -177,7 +184,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
     const fetchedModels = modelsData.models || [];
 
     // Filter out models already in the built-in registry
-    const registryIds = new Set(getModelsByProviderId(connection.provider).map((m: any) => m.id));
+    const registryIds = new Set(getModelsByProviderId(logProvider).map((m: any) => m.id));
 
     // Replace the full model list
     const models = fetchedModels
@@ -185,17 +192,46 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
         id: m.id || m.name || m.model,
         name: m.name || m.displayName || m.id || m.model,
         source: "auto-sync",
+        ...(Array.isArray(m.supportedEndpoints) && m.supportedEndpoints.length > 0
+          ? { supportedEndpoints: m.supportedEndpoints }
+          : {}),
+        ...(typeof m.inputTokenLimit === "number" ? { inputTokenLimit: m.inputTokenLimit } : {}),
+        ...(typeof m.outputTokenLimit === "number" ? { outputTokenLimit: m.outputTokenLimit } : {}),
+        ...(typeof m.description === "string" ? { description: m.description } : {}),
+        ...(m.supportsThinking === true ? { supportsThinking: true } : {}),
       }))
       .filter((m: any) => m.id && !registryIds.has(m.id));
 
-    const previousModels = await getCustomModels(connection.provider);
-    const replaced = await replaceCustomModels(connection.provider, models);
+    const previousModels = await getCustomModels(logProvider);
+    const replaced = await replaceCustomModels(logProvider, models);
+
+    // For Gemini: also write to syncedAvailableModels (unioned across API keys)
+    if (logProvider === "gemini") {
+      try {
+        const syncedModels = models.map((m: any) => ({
+          id: m.id,
+          name: m.name || m.id,
+          source: "api-sync" as const,
+          ...(m.supportedEndpoints ? { supportedEndpoints: m.supportedEndpoints } : {}),
+          ...(typeof m.inputTokenLimit === "number" ? { inputTokenLimit: m.inputTokenLimit } : {}),
+          ...(typeof m.outputTokenLimit === "number"
+            ? { outputTokenLimit: m.outputTokenLimit }
+            : {}),
+          ...(typeof m.description === "string" ? { description: m.description } : {}),
+          ...(m.supportsThinking === true ? { supportsThinking: true } : {}),
+        }));
+        await replaceSyncedAvailableModelsForConnection(logProvider, id, syncedModels);
+      } catch (e) {
+        console.error("Failed to union synced available models for gemini:", e);
+      }
+    }
+
     const modelChanges = summarizeModelChanges(previousModels, replaced);
 
     let syncedAliases = 0;
-    if (usesManagedAvailableModels(connection.provider)) {
+    if (usesManagedAvailableModels(logProvider)) {
       const aliasSync = await syncManagedAvailableModelAliases(
-        connection.provider,
+        logProvider,
         models.map((model: any) => model.id)
       );
       syncedAliases = aliasSync.assignedAliases.length;
@@ -207,7 +243,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
         path: `/api/providers/${id}/models`,
         status: 200,
         model: "model-sync",
-        provider: providerLabel,
+        provider: logProvider,
         sourceFormat: "-",
         connectionId: id,
         duration: Date.now() - start,
@@ -215,8 +251,8 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
         responseBody: {
           syncedModels: models.length,
           syncedAliases,
-          provider: connection.provider,
-          channel: providerLabel,
+          provider: logProvider,
+          channel: channelLabel,
           modelChanges,
         },
       });
@@ -224,7 +260,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
 
     return NextResponse.json({
       ok: true,
-      provider: connection.provider,
+      provider: logProvider,
       syncedModels: replaced.length,
       syncedAliases,
       modelChanges,
@@ -238,12 +274,19 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       path: `/api/providers/${id}/sync-models`,
       status: 500,
       model: "model-sync",
-      provider: "unknown",
+      provider: logProvider,
       sourceFormat: "-",
       connectionId: id,
       duration: Date.now() - start,
       error: error.message || "Sync failed",
       requestType: "model-sync",
+      ...(channelLabel
+        ? {
+            responseBody: {
+              channel: channelLabel,
+            },
+          }
+        : {}),
     }).catch(() => {});
 
     return NextResponse.json({ error: error.message || "Failed to sync models" }, { status: 500 });

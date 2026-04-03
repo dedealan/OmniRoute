@@ -25,6 +25,13 @@ function sanitizeAnthropicBaseUrl(baseUrl: string) {
     .replace(/\/messages(?:\?[^#]*)?$/i, "");
 }
 
+function sanitizeClaudeCodeCompatibleBaseUrl(baseUrl: string) {
+  return (baseUrl || "")
+    .trim()
+    .replace(/\/$/, "")
+    .replace(/\/(?:v\d+\/)?messages(?:\?[^#]*)?$/i, "");
+}
+
 // GET /api/provider-nodes - List all provider nodes
 export async function GET() {
   try {
@@ -86,9 +93,11 @@ export async function POST(request) {
         return NextResponse.json({ error: "CC Compatible provider is disabled" }, { status: 403 });
       }
 
-      const sanitizedBaseUrl = sanitizeAnthropicBaseUrl(
-        baseUrl || ANTHROPIC_COMPATIBLE_DEFAULTS.baseUrl
-      );
+      const rawBaseUrl = baseUrl || ANTHROPIC_COMPATIBLE_DEFAULTS.baseUrl;
+      const sanitizedBaseUrl =
+        compatMode === "cc"
+          ? sanitizeClaudeCodeCompatibleBaseUrl(rawBaseUrl)
+          : sanitizeAnthropicBaseUrl(rawBaseUrl);
 
       const node = await createProviderNode({
         id:
@@ -100,7 +109,7 @@ export async function POST(request) {
         baseUrl: sanitizedBaseUrl,
         name: name.trim(),
         chatPath: chatPath || null,
-        modelsPath: modelsPath || null,
+        modelsPath: compatMode === "cc" ? null : modelsPath || null,
       });
       return NextResponse.json({ node }, { status: 201 });
     }

@@ -20,6 +20,7 @@ node_modules/
 !.yarn/plugins
 !.yarn/releases
 !.yarn/versions
+.data/
 
 # testing
 coverage/
@@ -56,6 +57,7 @@ next-env.d.ts
 
 # data and logs
 data/
+.data/
 logs/*
 
 # analysis directories (generated, not tracked)
@@ -154,3 +156,6 @@ typescript
 
 # Gemini Antigravity agent data
 .gemini/
+
+# Superpowers plans/specs (internal tooling, not project code)
+docs/superpowers/

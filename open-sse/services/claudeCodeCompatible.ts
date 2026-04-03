@@ -1,7 +1,9 @@
 import { createHash, randomUUID } from "node:crypto";
 
+import { prepareClaudeRequest } from "../translator/helpers/claudeHelper.ts";
+
 export const CLAUDE_CODE_COMPATIBLE_PREFIX = "anthropic-compatible-cc-";
-export const CLAUDE_CODE_COMPATIBLE_DEFAULT_CHAT_PATH = "/messages?beta=true";
+export const CLAUDE_CODE_COMPATIBLE_DEFAULT_CHAT_PATH = "/v1/messages?beta=true";
 export const CLAUDE_CODE_COMPATIBLE_DEFAULT_MODELS_PATH = "/models";
 export const CLAUDE_CODE_COMPATIBLE_DEFAULT_MAX_TOKENS = 8092;
 export const CLAUDE_CODE_COMPATIBLE_ANTHROPIC_VERSION = "2023-06-01";
@@ -26,11 +28,13 @@ type MessageLike = {
 type BuildRequestOptions = {
   sourceBody?: Record<string, unknown> | null;
   normalizedBody?: Record<string, unknown> | null;
+  claudeBody?: Record<string, unknown> | null;
   model: string;
   stream?: boolean;
   cwd?: string;
   now?: Date;
   sessionId?: string | null;
+  preserveCacheControl?: boolean;
 };
 
 export function isClaudeCodeCompatibleProvider(provider: string | null | undefined): boolean {
@@ -42,15 +46,40 @@ export function stripAnthropicMessagesSuffix(baseUrl: string | null | undefined)
     .trim()
     .replace(/\/$/, "");
   if (!normalized) return "";
-  return normalized.replace(/\/messages(?:\?[^#]*)?$/i, "");
+  return normalized.split("?")[0].replace(/\/messages$/i, "");
 }
 
-export function joinBaseUrlAndPath(baseUrl: string, path: string): string {
-  const normalizedBase = stripAnthropicMessagesSuffix(baseUrl).replace(/\/$/, "");
+export function stripClaudeCodeCompatibleEndpointSuffix(
+  baseUrl: string | null | undefined
+): string {
+  const normalized = String(baseUrl || "")
+    .trim()
+    .replace(/\/$/, "");
+  if (!normalized) return "";
+  return normalized.split("?")[0].replace(/\/(?:v\d+\/)?messages$/i, "");
+}
+
+function joinNormalizedBaseUrlAndPath(baseUrl: string, path: string): string {
+  const normalizedBase = String(baseUrl || "").replace(/\/$/, "");
   const normalizedPath = String(path || "").startsWith("/")
     ? String(path)
     : `/${String(path || "")}`;
+  const versionMatch = normalizedBase.match(/(\/v\d+)$/i);
+  if (
+    versionMatch &&
+    normalizedPath.toLowerCase().startsWith(`${versionMatch[1].toLowerCase()}/`)
+  ) {
+    return `${normalizedBase}${normalizedPath.slice(versionMatch[1].length)}`;
+  }
   return `${normalizedBase}${normalizedPath}`;
+}
+
+export function joinBaseUrlAndPath(baseUrl: string, path: string): string {
+  return joinNormalizedBaseUrlAndPath(stripAnthropicMessagesSuffix(baseUrl), path);
+}
+
+export function joinClaudeCodeCompatibleUrl(baseUrl: string, path: string): string {
+  return joinNormalizedBaseUrlAndPath(stripClaudeCodeCompatibleEndpointSuffix(baseUrl), path);
 }
 
 export function buildClaudeCodeCompatibleHeaders(
@@ -91,7 +120,7 @@ export function buildClaudeCodeCompatibleValidationPayload(model = "claude-sonne
       max_tokens: 1,
     },
     model,
-    stream: false,
+    stream: true,
     sessionId,
     cwd: process.cwd(),
     now: new Date(),
@@ -112,25 +141,44 @@ export function resolveClaudeCodeCompatibleSessionId(headers?: HeaderLike): stri
 export function buildClaudeCodeCompatibleRequest({
   sourceBody,
   normalizedBody,
+  claudeBody,
   model,
   stream = false,
   cwd = process.cwd(),
   now = new Date(),
   sessionId,
+  preserveCacheControl = false,
 }: BuildRequestOptions) {
   const normalized = normalizedBody || {};
-  const messages = Array.isArray(normalized.messages)
-    ? buildClaudeCodeCompatibleMessages(normalized.messages as MessageLike[])
-    : [];
-  const system = buildClaudeCodeCompatibleSystemBlocks(
-    normalized.messages as MessageLike[],
+  const preparedClaudeBody = claudeBody
+    ? prepareClaudeCodeCompatibleBody(claudeBody, preserveCacheControl)
+    : null;
+  const messages = preparedClaudeBody
+    ? buildClaudeCodeCompatibleMessagesFromClaude(
+        preparedClaudeBody.messages as MessageLike[],
+        preserveCacheControl
+      )
+    : Array.isArray(normalized.messages)
+      ? buildClaudeCodeCompatibleMessages(normalized.messages as MessageLike[])
+      : [];
+  const system = buildClaudeCodeCompatibleSystemBlocks({
+    messages: normalized.messages as MessageLike[],
+    systemBlocks: preparedClaudeBody?.system as Record<string, unknown>[] | undefined,
     cwd,
-    now
-  );
+    now,
+    preserveCacheControl,
+  });
   const resolvedSessionId = sessionId || randomUUID();
   const effort = resolveClaudeCodeCompatibleEffort(sourceBody, normalizedBody, model);
   const maxTokens = resolveClaudeCodeCompatibleMaxTokens(sourceBody, normalizedBody);
-  const tools = buildClaudeCodeCompatibleTools(normalizedBody, sourceBody);
+  const tools = preparedClaudeBody?.tools
+    ? applyClaudeCodeCompatibleToolCacheStrategy(
+        preparedClaudeBody.tools as Record<string, unknown>[],
+        {
+          preserveExisting: preserveCacheControl,
+        }
+      )
+    : buildClaudeCodeCompatibleTools(normalizedBody, sourceBody);
   const toolChoice =
     tools.length > 0
       ? buildClaudeCodeCompatibleToolChoice(
@@ -245,32 +293,112 @@ function buildClaudeCodeCompatibleMessages(messages: MessageLike[]) {
     merged.push({ role: message.role, content: [...message.content] });
   }
 
-  for (let i = merged.length - 1; i >= 0; i--) {
-    if (merged[i].role !== "user") continue;
-    const lastBlock = merged[i].content[merged[i].content.length - 1];
-    if (lastBlock) {
-      lastBlock.cache_control = { type: "ephemeral" };
+  // CC-compatible sites we tested reject assistant-prefill shaped requests even
+  // when Anthropic would normally allow them. Keep assistant/model history, but
+  // drop trailing assistant turns so the upstream request ends on a user turn.
+  while (merged.length > 0 && merged[merged.length - 1].role === "assistant") {
+    merged.pop();
+  }
+
+  if (merged.length === 0) {
+    const fallbackText = converted
+      .flatMap((message) => message.content)
+      .map((block) => toNonEmptyString(block.text))
+      .filter(Boolean)
+      .join("\n")
+      .trim();
+
+    if (fallbackText) {
+      return [
+        {
+          role: "user" as const,
+          content: [{ type: "text", text: fallbackText, cache_control: { type: "ephemeral" } }],
+        },
+      ];
     }
-    break;
+  }
+
+  applyClaudeCodeCompatibleMessageCacheStrategy(merged);
+
+  return merged;
+}
+
+function buildClaudeCodeCompatibleMessagesFromClaude(
+  messages: MessageLike[] | undefined,
+  preserveCacheControl: boolean
+) {
+  const converted = Array.isArray(messages)
+    ? messages
+        .map((message) => convertClaudeCodeCompatibleClaudeMessage(message, preserveCacheControl))
+        .filter(
+          (
+            message
+          ): message is { role: "user" | "assistant"; content: Array<Record<string, unknown>> } =>
+            !!message && message.content.length > 0
+        )
+    : [];
+
+  const merged: Array<{ role: "user" | "assistant"; content: Array<Record<string, unknown>> }> = [];
+
+  for (const message of converted) {
+    const last = merged[merged.length - 1];
+    if (last && last.role === message.role) {
+      last.content.push(...message.content);
+      continue;
+    }
+    merged.push({ role: message.role, content: [...message.content] });
+  }
+
+  while (merged.length > 0 && merged[merged.length - 1].role === "assistant") {
+    merged.pop();
+  }
+
+  if (!preserveCacheControl) {
+    for (const message of merged) {
+      stripCacheControlFromContentBlocks(message.content);
+    }
+  }
+  applyClaudeCodeCompatibleMessageCacheStrategy(merged, {
+    preserveExisting: preserveCacheControl,
+  });
+
+  if (merged.length === 0) {
+    const fallbackText = converted
+      .flatMap((message) => message.content)
+      .map((block) => contentToText(block))
+      .filter(Boolean)
+      .join("\n")
+      .trim();
+    if (fallbackText) {
+      return [
+        {
+          role: "user" as const,
+          content: [{ type: "text", text: fallbackText, cache_control: { type: "ephemeral" } }],
+        },
+      ];
+    }
   }
 
   return merged;
 }
 
-function buildClaudeCodeCompatibleSystemBlocks(
-  messages: MessageLike[] | undefined,
-  cwd: string,
-  now: Date
-) {
-  const customSystemBlocks = Array.isArray(messages)
-    ? messages
-        .filter((message) => {
-          const role = String(message?.role || "").toLowerCase();
-          return role === "system" || role === "developer";
-        })
-        .map((message) => contentToText(message?.content))
-        .filter(Boolean)
-    : [];
+function buildClaudeCodeCompatibleSystemBlocks({
+  messages,
+  systemBlocks,
+  cwd,
+  now,
+  preserveCacheControl,
+}: {
+  messages: MessageLike[] | undefined;
+  systemBlocks?: Array<Record<string, unknown>> | undefined;
+  cwd: string;
+  now: Date;
+  preserveCacheControl: boolean;
+}) {
+  const customSystemBlocks =
+    Array.isArray(systemBlocks) && systemBlocks.length > 0
+      ? systemBlocks
+      : extractCustomSystemBlocks(messages);
 
   const dateText = formatDate(now);
   const blocks: Array<Record<string, unknown>> = [
@@ -290,12 +418,17 @@ function buildClaudeCodeCompatibleSystemBlocks(
     },
   ];
 
-  for (const systemText of customSystemBlocks) {
-    blocks.push({
-      type: "text",
-      text: systemText,
-      cache_control: { type: "ephemeral" },
-    });
+  for (const systemBlock of customSystemBlocks) {
+    blocks.push(systemBlock);
+  }
+
+  if (
+    preserveCacheControl &&
+    customSystemBlocks.length > 0 &&
+    !customSystemBlocks.some((block) => hasCacheControl(block))
+  ) {
+    const lastCustomSystemBlock = customSystemBlocks[customSystemBlocks.length - 1];
+    lastCustomSystemBlock.cache_control = { type: "ephemeral", ttl: "1h" };
   }
 
   return blocks;
@@ -333,21 +466,24 @@ function buildClaudeCodeCompatibleTools(
 
   return rawTools
     .map((tool) => convertClaudeCodeCompatibleTool(tool))
-    .filter((tool): tool is Record<string, unknown> => !!tool);
+    .filter((tool): tool is Record<string, unknown> => !!tool)
+    .map((tool) => ({ ...tool }))
+    .map((tool, index, tools) => {
+      if (index !== findLastCacheableToolIndex(tools)) return tool;
+      return { ...tool, cache_control: { type: "ephemeral", ttl: "1h" } };
+    });
 }
 
 function convertClaudeCodeCompatibleTool(tool: unknown) {
   const rawTool = readRecord(tool);
   if (!rawTool) return null;
 
-  const toolData =
-    rawTool.type === "function" ? readRecord(rawTool.function) || rawTool : rawTool;
+  const toolData = rawTool.type === "function" ? readRecord(rawTool.function) || rawTool : rawTool;
 
   const name = toNonEmptyString(toolData.name);
   if (!name) return null;
 
-  const rawSchema =
-    readRecord(toolData.parameters) ||
+  const rawSchema = readRecord(toolData.parameters) ||
     readRecord(toolData.input_schema) || { type: "object", properties: {}, required: [] };
   const inputSchema =
     rawSchema.type === "object" && !readRecord(rawSchema.properties)
@@ -394,6 +530,252 @@ function buildClaudeCodeCompatibleToolChoice(choice: unknown) {
   }
 
   return null;
+}
+
+function prepareClaudeCodeCompatibleBody(
+  claudeBody: Record<string, unknown>,
+  preserveCacheControl: boolean
+) {
+  const prepared = prepareClaudeRequest(
+    {
+      system: normalizeClaudeSystemInput(claudeBody.system),
+      messages: normalizeClaudeMessageInput(claudeBody.messages),
+      tools: normalizeClaudeToolInput(claudeBody.tools),
+      thinking: readRecord(claudeBody.thinking) || claudeBody.thinking,
+    },
+    CLAUDE_CODE_COMPATIBLE_PREFIX,
+    preserveCacheControl
+  );
+
+  return readRecord(prepared);
+}
+
+function normalizeClaudeSystemInput(system: unknown) {
+  if (typeof system === "string") {
+    const text = system.trim();
+    return text ? [{ type: "text", text }] : [];
+  }
+
+  if (!Array.isArray(system)) return [];
+  return system
+    .map((block) => normalizeClaudeContentBlock(block))
+    .filter((block): block is Record<string, unknown> => !!block);
+}
+
+function normalizeClaudeMessageInput(messages: unknown) {
+  if (!Array.isArray(messages)) return [];
+  return messages
+    .map((message) => {
+      const record = readRecord(message);
+      if (!record) return null;
+
+      return {
+        ...record,
+        content: normalizeClaudeContentInput(record.content),
+      };
+    })
+    .filter((message): message is Record<string, unknown> => !!message);
+}
+
+function normalizeClaudeToolInput(tools: unknown) {
+  if (!Array.isArray(tools)) return [];
+  return tools
+    .map((tool) => readRecord(cloneValue(tool)))
+    .filter((tool): tool is Record<string, unknown> => !!tool);
+}
+
+function normalizeClaudeContentInput(content: unknown) {
+  const blocks = normalizeClaudeContentBlocks(content);
+  return blocks.length > 0 ? blocks : content;
+}
+
+function normalizeClaudeContentBlocks(content: unknown) {
+  if (typeof content === "string") {
+    const text = content.trim();
+    return text ? [{ type: "text", text }] : [];
+  }
+
+  if (!Array.isArray(content)) {
+    const block = normalizeClaudeContentBlock(content);
+    return block ? [block] : [];
+  }
+
+  return content
+    .map((block) => normalizeClaudeContentBlock(block))
+    .filter((block): block is Record<string, unknown> => !!block);
+}
+
+function normalizeClaudeContentBlock(block: unknown) {
+  const record = readRecord(cloneValue(block));
+  if (!record) return null;
+
+  if (
+    record.type === "text" ||
+    (typeof record.type !== "string" && typeof record.text === "string")
+  ) {
+    const text = toNonEmptyString(record.text);
+    if (!text) return null;
+    return {
+      ...record,
+      type: "text",
+      text,
+    };
+  }
+
+  return record;
+}
+
+function convertClaudeCodeCompatibleClaudeMessage(
+  message: MessageLike | null | undefined,
+  preserveCacheControl: boolean
+) {
+  const rawRole = String(message?.role || "").toLowerCase();
+  const role = rawRole === "user" ? "user" : rawRole === "assistant" ? "assistant" : null;
+
+  if (!role) return null;
+
+  const content = normalizeClaudeContentBlocks(message?.content).map((block) => {
+    if (preserveCacheControl) return block;
+    const { cache_control, ...rest } = block;
+    return rest;
+  });
+  if (content.length === 0) return null;
+
+  return {
+    role,
+    content,
+  };
+}
+
+function extractCustomSystemBlocks(messages: MessageLike[] | undefined) {
+  if (!Array.isArray(messages)) return [];
+
+  const blocks = messages
+    .filter((message) => {
+      const role = String(message?.role || "").toLowerCase();
+      return role === "system" || role === "developer";
+    })
+    .map((message) => contentToText(message?.content))
+    .filter(Boolean)
+    .map((text) => ({
+      type: "text",
+      text,
+      cache_control: { type: "ephemeral" },
+    }));
+
+  if (blocks.length > 0) {
+    blocks[blocks.length - 1].cache_control = { type: "ephemeral", ttl: "1h" };
+  }
+
+  return blocks;
+}
+
+function applyClaudeCodeCompatibleMessageCacheStrategy(
+  messages: Array<{ role: "user" | "assistant"; content: Array<Record<string, unknown>> }>,
+  options: {
+    preserveExisting?: boolean;
+  } = {}
+) {
+  const preserveExisting = options.preserveExisting === true;
+  const userIndexes = messages.reduce((indexes, message, index) => {
+    if (message.role === "user") indexes.push(index);
+    return indexes;
+  }, [] as number[]);
+  const hasAssistant = messages.some((message) => message.role === "assistant");
+  const secondToLastUserIndex = userIndexes.length >= 2 ? userIndexes[userIndexes.length - 2] : -1;
+
+  if (secondToLastUserIndex >= 0) {
+    markLastContentCacheControl(
+      messages[secondToLastUserIndex].content,
+      undefined,
+      preserveExisting
+    );
+  } else if (!hasAssistant && userIndexes.length > 0) {
+    markLastContentCacheControl(
+      messages[userIndexes[userIndexes.length - 1]].content,
+      undefined,
+      preserveExisting
+    );
+  }
+
+  const lastUserIndex = userIndexes.length > 0 ? userIndexes[userIndexes.length - 1] : -1;
+  const endsOnUser = lastUserIndex === messages.length - 1;
+  if (endsOnUser && lastUserIndex >= 0) {
+    markLastContentCacheControl(messages[lastUserIndex].content, undefined, preserveExisting);
+  }
+
+  for (let i = messages.length - 1; i >= 0; i--) {
+    if (messages[i].role !== "assistant") continue;
+    if (markLastContentCacheControl(messages[i].content, undefined, preserveExisting)) break;
+  }
+}
+
+function stripCacheControlFromContentBlocks(content: Array<Record<string, unknown>>) {
+  for (const block of content) {
+    delete block.cache_control;
+  }
+}
+
+function applyClaudeCodeCompatibleToolCacheStrategy(
+  tools: Array<Record<string, unknown>>,
+  options: {
+    preserveExisting?: boolean;
+  } = {}
+) {
+  const preparedTools = tools.map((tool) => ({ ...tool }));
+  const lastCacheableToolIndex = findLastCacheableToolIndex(preparedTools);
+  if (lastCacheableToolIndex < 0) return preparedTools;
+
+  if (options.preserveExisting && preparedTools.some((tool) => hasCacheControl(tool))) {
+    return preparedTools;
+  }
+
+  preparedTools[lastCacheableToolIndex].cache_control = { type: "ephemeral", ttl: "1h" };
+  return preparedTools;
+}
+
+function markLastContentCacheControl(
+  content: Array<Record<string, unknown>>,
+  ttl?: string,
+  preserveExisting = false
+) {
+  if (!Array.isArray(content) || content.length === 0) return false;
+  const lastBlock = content[content.length - 1];
+  if (!lastBlock) return false;
+  if (
+    preserveExisting &&
+    content.some(
+      (block) =>
+        !!block &&
+        typeof block === "object" &&
+        !!readRecord(block)?.cache_control &&
+        typeof readRecord(block)?.cache_control === "object"
+    )
+  ) {
+    return true;
+  }
+  lastBlock.cache_control = ttl ? { type: "ephemeral", ttl } : { type: "ephemeral" };
+  return true;
+}
+
+function hasCacheControl(value: unknown) {
+  return !!readRecord(value)?.cache_control && typeof readRecord(value)?.cache_control === "object";
+}
+
+function findLastCacheableToolIndex(tools: Array<Record<string, unknown>>) {
+  for (let i = tools.length - 1; i >= 0; i--) {
+    if (!tools[i].defer_loading) {
+      return i;
+    }
+  }
+  return -1;
+}
+
+function cloneValue<T>(value: T): T {
+  if (typeof structuredClone === "function") {
+    return structuredClone(value);
+  }
+  return JSON.parse(JSON.stringify(value)) as T;
 }
 
 function contentToText(content: unknown): string {

@@ -2,6 +2,7 @@ import { register } from "../registry.ts";
 import { FORMATS } from "../formats.ts";
 import { DEFAULT_THINKING_GEMINI_SIGNATURE } from "../../config/defaultThinkingSignature.ts";
 import { ANTIGRAVITY_DEFAULT_SYSTEM } from "../../config/constants.ts";
+import { getGeminiThoughtSignature } from "../../services/geminiThoughtSignatureStore.ts";
 import { openaiToClaudeRequestForAntigravity } from "./openai-to-claude.ts";
 import {
   capMaxOutputTokens,
@@ -33,7 +34,7 @@ type GeminiGenerationConfig = {
   maxOutputTokens?: unknown;
   thinkingConfig?: {
     thinkingBudget: number;
-    include_thoughts: boolean;
+    includeThoughts: boolean;
   };
   responseMimeType?: string;
   responseSchema?: unknown;
@@ -73,6 +74,15 @@ type CloudCodeEnvelope = {
     };
   };
 };
+
+function normalizeAntigravityToolName(name: unknown) {
+  if (typeof name !== "string") return name;
+  const trimmed = name.trim();
+  if (!trimmed) return trimmed;
+
+  const namespaceIndex = trimmed.indexOf(":");
+  return namespaceIndex >= 0 ? trimmed.slice(namespaceIndex + 1) : trimmed;
+}
 
 // Core: Convert OpenAI request to Gemini format (base for all variants)
 function openaiToGeminiBase(model, body, stream) {
@@ -156,7 +166,6 @@ function openaiToGeminiBase(model, body, stream) {
           });
           parts.push({
             thoughtSignature: DEFAULT_THINKING_GEMINI_SIGNATURE,
-            text: "",
           });
         }
 
@@ -169,20 +178,39 @@ function openaiToGeminiBase(model, body, stream) {
 
         if (msg.tool_calls && Array.isArray(msg.tool_calls)) {
           const toolCallIds = [];
+          const firstPersistedSignature = msg.tool_calls
+            .map((tc) => getGeminiThoughtSignature(tc.id))
+            .find((signature) => typeof signature === "string" && signature.length > 0);
+
+          const shouldUseEmbeddedSignature = !parts.some((p) => p.thoughtSignature);
+          let embeddedSignatureUsed = false;
+
           for (const tc of msg.tool_calls) {
             if (tc.type !== "function") continue;
 
             const args = tryParseJSON(tc.function?.arguments || "{}");
-            // Do NOT include thoughtSignature on functionCall parts — it is only valid
-            // on thinking/reasoning parts and causes HTTP 400 "invalid argument" from the
-            // Gemini API when present on a functionCall part (#725).
+            const signatureForToolCall = getGeminiThoughtSignature(tc.id);
+            const embeddedThoughtSignature =
+              shouldUseEmbeddedSignature && !embeddedSignatureUsed
+                ? firstPersistedSignature ||
+                  signatureForToolCall ||
+                  DEFAULT_THINKING_GEMINI_SIGNATURE
+                : undefined;
+
+            // Gemini expects the signature on the functionCall part itself. For
+            // parallel calls, only the first functionCall in the batch carries it.
             parts.push({
+              ...(embeddedThoughtSignature ? { thoughtSignature: embeddedThoughtSignature } : {}),
               functionCall: {
                 id: tc.id,
                 name: tc.function.name,
                 args: args,
               },
             });
+
+            if (embeddedThoughtSignature) {
+              embeddedSignatureUsed = true;
+            }
             toolCallIds.push(tc.id);
           }
 
@@ -306,7 +334,7 @@ export function openaiToGeminiCLIRequest(model, body, stream) {
     const budget = budgetMap[body.reasoning_effort] || getDefaultThinkingBudget(model) || 8192;
     gemini.generationConfig.thinkingConfig = {
       thinkingBudget: budget,
-      include_thoughts: true,
+      includeThoughts: true,
     };
   }
 
@@ -314,13 +342,14 @@ export function openaiToGeminiCLIRequest(model, body, stream) {
   if (body.thinking?.type === "enabled" && body.thinking.budget_tokens) {
     gemini.generationConfig.thinkingConfig = {
       thinkingBudget: body.thinking.budget_tokens,
-      include_thoughts: true,
+      includeThoughts: true,
     };
   }
 
   // Clean schema for tools
   if (gemini.tools?.[0]?.functionDeclarations) {
     for (const fn of gemini.tools[0].functionDeclarations) {
+      fn.name = normalizeAntigravityToolName(fn.name);
       if (fn.parameters) {
         const cleanedSchema = cleanJSONSchemaForAntigravity(fn.parameters);
         fn.parameters = cleanedSchema;
@@ -330,6 +359,20 @@ export function openaiToGeminiCLIRequest(model, body, stream) {
         //   fn.parametersJsonSchema = cleanedSchema;
         //   delete fn.parameters;
         // }
+      }
+    }
+  }
+
+  if (Array.isArray(gemini.contents)) {
+    for (const content of gemini.contents) {
+      if (!Array.isArray(content.parts)) continue;
+      for (const part of content.parts) {
+        if (part.functionCall?.name) {
+          part.functionCall.name = normalizeAntigravityToolName(part.functionCall.name);
+        }
+        if (part.functionResponse?.name) {
+          part.functionResponse.name = normalizeAntigravityToolName(part.functionResponse.name);
+        }
       }
     }
   }
@@ -435,7 +478,7 @@ function wrapInCloudCodeEnvelopeForClaude(model, claudeRequest, credentials = nu
           } else if (block.type === "image" && block.source) {
             parts.push({
               inlineData: {
-                mime_type: block.source.media_type,
+                mimeType: block.source.media_type,
                 data: block.source.data,
               },
             });

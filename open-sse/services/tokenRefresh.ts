@@ -1,15 +1,17 @@
 import { PROVIDERS, OAUTH_ENDPOINTS } from "../config/constants.ts";
-import { createHash } from "node:crypto";
+import { createHmac } from "node:crypto";
 
 // Token expiry buffer (refresh if expires within 5 minutes)
 export const TOKEN_EXPIRY_BUFFER_MS = 5 * 60 * 1000;
+
+const CACHE_SECRET = "omniroute-token-cache";
 
 // In-flight refresh promise cache to prevent race conditions
 // Key: "provider:sha256(refreshToken)" → Value: Promise<result>
 const refreshPromiseCache = new Map();
 
 function getRefreshCacheKey(provider, refreshToken) {
-  const tokenHash = createHash("sha256").update(refreshToken).digest("hex");
+  const tokenHash = createHmac("sha256", CACHE_SECRET).update(refreshToken).digest("hex");
   return `${provider}:${tokenHash}`;
 }
 
@@ -324,9 +326,12 @@ export async function refreshQwenToken(refreshToken, log) {
       });
 
       return {
-        accessToken: tokens.id_token || tokens.access_token,
+        accessToken: tokens.access_token,
         refreshToken: tokens.refresh_token || refreshToken,
         expiresIn: tokens.expires_in,
+        providerSpecificData: tokens.resource_url
+          ? { resourceUrl: tokens.resource_url }
+          : undefined,
       };
     } else {
       const errorText = await response.text().catch(() => "");
@@ -539,6 +544,14 @@ export async function refreshKiroToken(refreshToken, providerSpecificData, log) 
  * Specialized refresh for Qoder OAuth tokens
  */
 export async function refreshIflowToken(refreshToken, log) {
+  if (!OAUTH_ENDPOINTS.qoder.token || !PROVIDERS.qoder.clientId || !PROVIDERS.qoder.clientSecret) {
+    log?.warn?.(
+      "TOKEN_REFRESH",
+      "Qoder OAuth refresh skipped: browser OAuth is not configured in this environment"
+    );
+    return null;
+  }
+
   const basicAuth = btoa(`${PROVIDERS.qoder.clientId}:${PROVIDERS.qoder.clientSecret}`);
 
   const response = await fetch(OAUTH_ENDPOINTS.qoder.token, {
